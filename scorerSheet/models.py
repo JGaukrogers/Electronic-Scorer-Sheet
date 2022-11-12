@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
@@ -33,3 +34,15 @@ class Game(models.Model):
 
     def __str__(self):
         return f'Game nr {self.game_number} played in {self.year}'
+
+
+class Score(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+
+
+class Cell(models.Model):
+    timestamp = models.TimeField()
+    inning = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
+    game_moves = models.CharField(max_length=50)
+    player = models.ForeignKey(Score, on_delete=models.CASCADE)
