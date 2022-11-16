@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hello Scorer</h1>
+{% endblock %}
+
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset.forms %}
+            <ul>
+                {{ form.as_ul }}
+            </ul>
+            {% endfor %}
+            <br>
+            <input name="submit" type="submit" value="Submit">
+        </form>
+    </div>
