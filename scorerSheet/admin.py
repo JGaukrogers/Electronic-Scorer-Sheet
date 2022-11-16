@@ -26,4 +26,4 @@ class ScoreAdmin(admin.ModelAdmin):
 
 @admin.register(Cell)
 class CellAdmin(admin.ModelAdmin):
-    list_display = ['timestamp', 'inning', 'game_moves', 'player']
+    list_display = ['timestamp', 'inning', 'game_moves', 'score']

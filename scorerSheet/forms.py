@@ -7,5 +7,5 @@ class CellForm(ModelForm):
     class Meta:
         model = Cell
         fields = ['inning',
-                  'player',
+                  'score',
                   'game_moves']
