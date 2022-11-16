@@ -4,6 +4,26 @@
 <h1>Hello Scorer</h1>
 
 <div>
+    <table border="1">
+        <!-- HEADER -->
+        <tr>
+            <td>Name</td>
+            {% for i in "12345" %}
+                <td>{{i}}</td>
+            {% endfor %}
+        </tr>
+        {% for i in "123456789" %}
+        <tr>
+            <td>Player {{i}}</td>
+            {% for i in "12345" %}
+                <td>&#9633;</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div>
     <form method="POST">
         {% csrf_token %}
         {{ formset.management_form }}
