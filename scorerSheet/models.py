@@ -18,7 +18,7 @@ class Player(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.player_name}'
+        return self.player_name
 
 
 class Game(models.Model):
@@ -42,7 +42,7 @@ class Score(models.Model):
 
 
 class Cell(models.Model):
-    timestamp = models.TimeField()
+    timestamp = models.DateTimeField(auto_now_add=True)
     inning = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
     game_moves = models.CharField(max_length=50)
-    player = models.ForeignKey(Score, on_delete=models.CASCADE)
+    score = models.ForeignKey(Score, on_delete=models.CASCADE)
