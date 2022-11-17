@@ -2,7 +2,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
-# Create your models here.
 class Team(models.Model):
     club_number = models.IntegerField(primary_key=True)
     team_name = models.CharField(max_length=50)
@@ -55,8 +54,7 @@ class BattingOrder(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     enter_inning = models.ForeignKey(Inning, related_name="enter_inning", on_delete=models.CASCADE)
     exit_inning = models.ForeignKey(Inning, related_name="exit_inning", on_delete=models.CASCADE, null=True, blank=True)
-    # TODO: are positions 1..10?
-    position = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
+    position = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(9)])
 
     def __str__(self):
         return f'{self.player} @ position: {self.position} (entered: {self.enter_inning} exited: {self.exit_inning})'
