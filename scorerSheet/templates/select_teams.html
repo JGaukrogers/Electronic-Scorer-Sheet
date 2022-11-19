@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Select the teams</h1>
+<!-- TODO enhance it to also select the guest team -->
+<div>
+    <form action="new_game" method="post">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" value="OK">
+    </form>
+</div>
+
+{% endblock %}
