@@ -30,7 +30,7 @@ def new_game(request):
         # create a form instance and populate it with data from the request:
         home_team = request.POST['home_team']
         guest_team = request.POST['guest_team']
-        print(f'home team: {home_team}') #TODO: find out why the team is printed here, but not in the html file
+        print(f'home team: {home_team}')
         print(f'guest team: {guest_team}')
         form = GameForm(request.POST)
         # check whether it's valid:
@@ -39,6 +39,7 @@ def new_game(request):
             # ...
             # redirect to a new URL:
             return render(request, 'sheet.html', {'home_team': home_team, 'guest_team': guest_team})
+        return render(request, 'new_game.html', {'home_team': home_team, 'guest_team': guest_team})
 
     # if a GET (or any other method) we'll create a blank form
     else:
