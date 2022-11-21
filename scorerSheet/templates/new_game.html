@@ -3,16 +3,9 @@
 {% block content %}
 <h1>Create a new Game</h1>
 <div>
-    Home team: {{home_team}}
-    <br/>
-    Guest team: {{guest_team}}
-</div>
-
-<div>
     <form action="show_sheet" method="post">
         {% csrf_token %}
-        <label for="game_number">Game Number: </label>
-        <input id="game_number" type="text" name="game_number" value="{{ game_number }}">
+        {{ form.as_p }}
         <input type="submit" value="OK">
     </form>
 </div>

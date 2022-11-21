@@ -27,25 +27,24 @@ def new_game(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         print('new_game - in post')
-        # create a form instance and populate it with data from the request:
-        home_team = request.POST['home_team']
-        guest_team = request.POST['guest_team']
-        print(f'home team: {home_team}')
-        print(f'guest team: {guest_team}')
+        team_list = TeamsDropdown()
         form = GameForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
+            print('new_game - in form is valid')
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return render(request, 'sheet.html', {'home_team': home_team, 'guest_team': guest_team})
-        return render(request, 'new_game.html', {'home_team': home_team, 'guest_team': guest_team})
+            return render(request, 'sheet.html', {'team_list': team_list})
+        else:
+            print('new_game - NOT in form is valid')
+            return render(request, 'new_game.html', {'team_list': team_list})
 
     # if a GET (or any other method) we'll create a blank form
     else:
         print('new_game - NOT in post')
         form = GameForm()
-    return render(request, 'new_game.html', {'form': form})
+        return render(request, 'new_game.html', {'form': form})
 
 
 def select_teams(request):
