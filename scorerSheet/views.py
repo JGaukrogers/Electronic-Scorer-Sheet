@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, TeamsDropdown
-from scorerSheet.models import Cell
+from scorerSheet.models import Cell, Team
 
 
 def show_sheet(request):
@@ -23,7 +23,6 @@ def show_sheet(request):
 
 
 def new_game(request):
-#    import pdb; pdb.set_trace()
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         print('new_game - in post')
@@ -37,25 +36,30 @@ def new_game(request):
             # redirect to a new URL:
             return render(request, 'sheet.html', {'team_list': team_list})
         else:
+            create_new_team(request)
             print('new_game - NOT in form is valid')
             form = GameForm()
             return render(request, 'new_game.html', {'form': form})
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        print('new_game - NOT in post')
         form = GameForm()
         return render(request, 'new_game.html', {'form': form})
 
 
+def create_new_team(request):
+    new_team = Team()
+    new_team.club_number = request.POST['club_number']
+    new_team.team_name = request.POST['team_name']
+    new_team.location = request.POST['location']
+    new_team.save()
+
+
 def create_team(request):
     if request.method == 'POST':
-        print('create_team - in post')
         form = TeamForm(request.POST)
         if form.is_valid():
             return HttpResponseRedirect('create_team.html')
     else:
-        print('create_team - NOT in post')
         form = TeamForm()
-        team_list = TeamsDropdown()
-        return render(request, 'create_team.html', {'form': form, 'team_list': team_list})
+        return render(request, 'create_team.html', {'form': form})
