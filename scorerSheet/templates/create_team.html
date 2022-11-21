@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Create a new team</h1>
+<div>
+    <form action="new_game" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Create team">
+    </form>
+</div>
+<div>
+    <!--
+    <form action="new_game" method="post">
+        {% csrf_token %}
+        {{ team_list.as_p }}
+        <input type="submit" value="OK">
+    </form>
+    -->
+    <button type="button">
+        <a href="{% url 'new_game' %}">Get back</a>
+    </button>
+</div>
+
+{% endblock %}

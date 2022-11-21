@@ -38,7 +38,8 @@ def new_game(request):
             return render(request, 'sheet.html', {'team_list': team_list})
         else:
             print('new_game - NOT in form is valid')
-            return render(request, 'new_game.html', {'team_list': team_list})
+            form = GameForm()
+            return render(request, 'new_game.html', {'form': form})
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -47,15 +48,14 @@ def new_game(request):
         return render(request, 'new_game.html', {'form': form})
 
 
-def select_teams(request):
+def create_team(request):
     if request.method == 'POST':
-        print('select_teams - in post')
+        print('create_team - in post')
         form = TeamForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('select_teams.html')
-
+            return HttpResponseRedirect('create_team.html')
     else:
-        print('select_teams - NOT in post')
+        print('create_team - NOT in post')
         form = TeamForm()
         team_list = TeamsDropdown()
-        return render(request, 'select_teams.html', {'form': form, 'team_list': team_list})
+        return render(request, 'create_team.html', {'form': form, 'team_list': team_list})

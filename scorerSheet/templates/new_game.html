@@ -3,6 +3,11 @@
 {% block content %}
 <h1>Create a new Game</h1>
 <div>
+    <button type="button">
+        <a href="{% url 'create_team' %}">Create a new team</a>
+    </button>
+</div>
+<div>
     <form action="show_sheet" method="post">
         {% csrf_token %}
         {{ form.as_p }}
