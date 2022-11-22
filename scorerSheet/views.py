@@ -32,13 +32,14 @@ def new_game(request):
             print('new_game - in form is valid')
             # TODO: when we create the game I think we also need to make the
             # Score, BattingOrder and Cell objects, then we redirect to
-            # show_sheet yielding the right game (added a todo there as well)
+            # show_sheet yielding the right game
 
             return redirect('show_sheet')  # add argument / game id
         else:
-            print('new_game - NOT in form is valid')
-            form = GameForm()
-            return render(request, 'new_game.html', {'form': form})
+            print('Form is not valid. Action to be implemented (or not...)')
+            # print('new_game - NOT in form is valid')
+            # form = GameForm()
+            # return render(request, 'new_game.html', {'form': form})
 
     # if a GET (or any other method) we'll create a blank form
     else:
