@@ -6,6 +6,8 @@ from scorerSheet.models import Cell
 
 
 def show_sheet(request):
+    # TODO: this view should get a game id argument to filter the right cells
+    # for only that game
     CellFormSet = modelformset_factory(Cell, CellForm, extra=0)
     if request.method == 'POST':
         formset = CellFormSet(request.POST)
@@ -28,8 +30,11 @@ def new_game(request):
         # check whether it's valid:
         if form.is_valid():
             print('new_game - in form is valid')
-            # redirect to a new URL:
-            return render(request, 'sheet.html', {'team_list': form})
+            # TODO: when we create the game I think we also need to make the
+            # Score, BattingOrder and Cell objects, then we redirect to
+            # show_sheet yielding the right game (added a todo there as well)
+
+            return redirect('show_sheet')  # add argument / game id
         else:
             print('new_game - NOT in form is valid')
             form = GameForm()
@@ -45,11 +50,11 @@ def create_team(request):
     if request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
+            print('create new team')
             form.save()
-            return redirect('new_game')
-        else:
-            form.save()
+            # TODO: do we need to add the players in this view or make a new
+            # dedicated view for that?
             return redirect('new_game')
     else:
         form = TeamForm()
-        return render(request, 'create_team.html', {'form': form})
+    return render(request, 'create_team.html', {'form': form})
