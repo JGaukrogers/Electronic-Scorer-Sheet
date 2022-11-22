@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Create a new team</h1>
 <div>
-    <form action="new_game" method="post">
+    <form action="" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Create team">
