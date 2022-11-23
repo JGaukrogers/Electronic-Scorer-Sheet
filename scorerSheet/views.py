@@ -59,3 +59,11 @@ def create_team(request):
     else:
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
+
+
+def add_players(request):
+    if request.method == 'POST':
+        return redirect('show_sheet')  # add argument / game id
+    else:
+        #form = PlayersForm()
+        return render(request, 'add_players.html', {})
