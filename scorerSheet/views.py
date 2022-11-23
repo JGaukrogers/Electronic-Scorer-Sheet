@@ -1,7 +1,7 @@
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect
 
-from scorerSheet.forms import CellForm, GameForm, TeamForm
+from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayersForm
 from scorerSheet.models import Cell
 
 
@@ -34,7 +34,7 @@ def new_game(request):
             # Score, BattingOrder and Cell objects, then we redirect to
             # show_sheet yielding the right game
 
-            return redirect('show_sheet')  # add argument / game id
+            return redirect('add_players')  # add argument / game id
         else:
             print('Form is not valid. Action to be implemented (or not...)')
             # print('new_game - NOT in form is valid')
@@ -53,8 +53,6 @@ def create_team(request):
         if form.is_valid():
             print('create new team')
             form.save()
-            # TODO: do we need to add the players in this view or make a new
-            # dedicated view for that?
             return redirect('new_game')
     else:
         form = TeamForm()
@@ -65,5 +63,5 @@ def add_players(request):
     if request.method == 'POST':
         return redirect('show_sheet')  # add argument / game id
     else:
-        #form = PlayersForm()
-        return render(request, 'add_players.html', {})
+        form = PlayersForm() #TODO it should be 9 players + pitcher
+        return render(request, 'add_players.html', {'form': form})

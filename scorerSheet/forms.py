@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 
-from scorerSheet.models import Cell, Game, Team
+from scorerSheet.models import Cell, Game, Team, Player
 
 
 class TeamForm(ModelForm):
@@ -19,3 +19,9 @@ class CellForm(ModelForm):
     class Meta:
         model = Cell
         fields = '__all__'
+
+
+class PlayersForm(ModelForm):
+    class Meta:
+        model = Player
+        fields = ['pass_number', 'player_name']
