@@ -57,7 +57,7 @@ def create_team(request):
 
 def add_players(request):
     if request.method == 'POST':
-        return redirect('show_sheet')  # add argument / game id
+        return redirect('update_sheet')  # add argument / game id
     else:
         form = PlayersForm() #TODO it should be 9 players + pitcher
         return render(request, 'add_players.html', {'form': form})
