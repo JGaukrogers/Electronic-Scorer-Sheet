@@ -51,6 +51,7 @@ class Inning(models.Model):
 
 
 class BattingOrder(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     enter_inning = models.ForeignKey(Inning, related_name="enter_inning", on_delete=models.CASCADE)
     exit_inning = models.ForeignKey(Inning, related_name="exit_inning", on_delete=models.CASCADE, null=True, blank=True)
