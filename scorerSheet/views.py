@@ -5,9 +5,8 @@ from scorerSheet.forms import CellForm, GameForm, TeamForm
 from scorerSheet.models import Cell, Team
 
 
-def show_sheet(request):
-    # TODO: this view should get a game id argument to filter the right cells
-    # for only that game
+def update_sheet(request, game_id):
+    # TODO: this view should retrieve the relevant cells for game_id
     CellFormSet = modelformset_factory(Cell, CellForm, extra=0)
     if request.method == 'POST':
         formset = CellFormSet(request.POST)
@@ -36,9 +35,9 @@ def new_game(request):
 
             # TODO: when we create the game I think we also need to make the
             # Score, BattingOrder and Cell objects, then we redirect to
-            # show_sheet yielding the right game (added a todo there as well)
+            # update_sheet yielding the right game (added a todo there as well)
 
-            return redirect('show_sheet')  # add argument / game id
+            return redirect('update_sheet')  # add argument / game id
     else:
         print('new_game - NOT in form is valid')
         form = GameForm()
