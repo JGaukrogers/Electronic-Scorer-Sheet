@@ -47,7 +47,7 @@ class Inning(models.Model):
     inning = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
 
     def __str__(self):
-        return self.inning
+        return str(self.inning)
 
 
 class BattingOrder(models.Model):
