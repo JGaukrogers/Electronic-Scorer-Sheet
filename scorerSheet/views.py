@@ -2,7 +2,7 @@ from django.forms import modelformset_factory
 from django.shortcuts import render, redirect
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayersForm
-from scorerSheet.models import Cell
+from scorerSheet.models import Cell, Player
 
 
 def update_sheet(request, game_id):
@@ -59,5 +59,17 @@ def add_players(request):
     if request.method == 'POST':
         return redirect('update_sheet')  # add argument / game id
     else:
-        form = PlayersForm() #TODO it should be 9 players + pitcher
-        return render(request, 'add_players.html', {'form': form})
+        PlayerFormSet = modelformset_factory(Player, PlayersForm, extra=0, min_num=9)
+        home_team_formset = PlayerFormSet(request.POST or None)
+        if home_team_formset.is_valid():
+            for form in home_team_formset:
+                print(form.cleaned_data)
+        home_team_formset.save()
+
+        guest_team_formset = PlayerFormSet(request.POST or None)
+        if guest_team_formset.is_valid():
+            for form in guest_team_formset:
+                print(form.cleaned_data)
+        guest_team_formset.save()
+        context = {'home_team_formset': home_team_formset, 'guest_team_formset': guest_team_formset}
+        return render(request, 'add_players.html', context)
