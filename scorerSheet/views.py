@@ -22,20 +22,15 @@ def update_sheet(request, game_id):
 
 
 def new_game(request):
-    # if this is a POST request we need to process the form data
     if request.method == 'POST':
         form = GameForm(request.POST)
-        # check whether it's valid:
         if form.is_valid():
-            form.save()
-            # process the data in form.cleaned_data as required
-            # ...
-
+            created_game = form.save()
             # TODO: when we create the game I think we also need to make the
             # Score, BattingOrder and Cell objects, then we redirect to
-            # update_sheet yielding the right game (added a todo there as well)
+            # update_sheet yielding the right game
 
-            return redirect('add_players')  # add argument / game id
+            return redirect('add_players', created_game.id)
     else:
         form = GameForm()
     return render(request, 'new_game.html', {'form': form})
@@ -52,7 +47,7 @@ def create_team(request):
     return render(request, 'create_team.html', {'form': form})
 
 
-def add_players(request):
+def add_players(request, game_id):
     if request.method == 'POST':
         return redirect('update_sheet')  # add argument / game id
     else:
