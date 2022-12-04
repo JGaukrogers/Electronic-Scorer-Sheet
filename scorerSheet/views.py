@@ -24,11 +24,9 @@ def update_sheet(request, game_id):
 def new_game(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
-        print('new_game - in post')
         form = GameForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            print('new_game - in form is valid')
             form.save()
             # process the data in form.cleaned_data as required
             # ...
@@ -47,7 +45,6 @@ def create_team(request):
     if request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
-            print('create new team')
             form.save()
             return redirect('new_game')
     else:
