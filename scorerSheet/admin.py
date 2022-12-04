@@ -1,7 +1,12 @@
 from django.contrib import admin
 
 # Register your models here.
-from scorerSheet.models import Team, Player, Game, Score, Cell
+from scorerSheet.models import Inning, Team, Player, Game, Score, Cell
+
+
+@admin.register(Inning)
+class InningAdmin(admin.ModelAdmin):
+    list_display = ['inning']
 
 
 @admin.register(Team)
