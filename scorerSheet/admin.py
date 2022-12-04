@@ -21,9 +21,9 @@ class GameAdmin(admin.ModelAdmin):
 
 @admin.register(Score)
 class ScoreAdmin(admin.ModelAdmin):
-    list_display = []
+    list_display = ['game', 'player']
 
 
 @admin.register(Cell)
 class CellAdmin(admin.ModelAdmin):
-    list_display = ['timestamp', 'inning', 'game_moves']
+    list_display = ['timestamp', 'inning', 'game_moves', 'score']

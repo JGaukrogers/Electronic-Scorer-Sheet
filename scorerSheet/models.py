@@ -2,7 +2,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
-# Create your models here.
 class Team(models.Model):
     club_number = models.IntegerField(primary_key=True)
     team_name = models.CharField(max_length=50)
@@ -40,9 +39,35 @@ class Score(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.game} player: {self.player}'
+
+
+class Inning(models.Model):
+    inning = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
+
+    def __str__(self):
+        return self.inning
+
+
+class BattingOrder(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    enter_inning = models.ForeignKey(Inning, related_name="enter_inning", on_delete=models.CASCADE)
+    exit_inning = models.ForeignKey(Inning, related_name="exit_inning", on_delete=models.CASCADE, null=True, blank=True)
+    position = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(9)])
+
+    def __str__(self):
+        return f'{self.player} @ position: {self.position} (entered: {self.enter_inning} exited: {self.exit_inning})'
+
 
 class Cell(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
-    inning = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
-    game_moves = models.CharField(max_length=50)
+    # btw note that models.CASCADE can destroy a lot of objects recursively
+    # when deleting, but I am assuming app won't be designed to delete anything
+    # at any point
+    inning = models.ForeignKey(Inning, on_delete=models.CASCADE)
+    game_moves = models.CharField(max_length=50, null=True, blank=True)
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Inning {self.inning} player {self.score}'
