@@ -21,9 +21,9 @@ class CellForm(ModelForm):
         fields = '__all__'
 
 
-class PlayersForm(ModelForm):
+class PlayerForm(ModelForm):
     class Meta:
         model = Player
-        fields = ['pass_number', 'player_name']
+        fields = '__all__'
 
     # TODO: override queryset to retrieve the right team

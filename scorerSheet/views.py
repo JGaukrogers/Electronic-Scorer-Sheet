@@ -85,3 +85,16 @@ def create_player_formset(PlayerFormSet, request, prefix):
     # TODO: not much left in this function, can inline in add_players
     home_team_formset = PlayerFormSet(request.POST or None, prefix=prefix)
     return home_team_formset
+
+
+def add_player(request, game_id, team_id):
+    if request.method == 'POST':
+        form = PlayerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('add_players', game_id, team_id)
+    else:
+        team = get_object_or_404(Team, pk=team_id)
+        data = {'team': team}
+        form = PlayerForm(data)
+    return render(request, 'add_player.html', {'form': form})
