@@ -5,22 +5,6 @@ from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm
 from scorerSheet.models import Cell, Player, Game, Team
 
 
-def update_sheet(request, game_id=0):
-    # TODO: this view should retrieve the relevant cells for game_id
-    CellFormSet = modelformset_factory(Cell, CellForm, extra=0)
-    if request.method == 'POST':
-        formset = CellFormSet(request.POST)
-        if formset.is_valid():
-            for form in formset:
-                print(form.cleaned_data)
-            formset.save()
-    else:
-        formset = CellFormSet()
-
-    context = {'formset': formset}
-    return render(request, "sheet.html", context)
-
-
 def new_game(request):
     if request.method == 'POST':
         form = GameForm(request.POST)
@@ -100,3 +84,19 @@ def add_player(request, game_id, team_id):
         data = {'team': team}
         form = PlayerForm(data)
     return render(request, 'add_player.html', {'form': form})
+
+
+def update_sheet(request, game_id=0):
+    # TODO: this view should retrieve the relevant cells for game_id
+    CellFormSet = modelformset_factory(Cell, CellForm, extra=0)
+    if request.method == 'POST':
+        formset = CellFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                print(form.cleaned_data)
+            formset.save()
+    else:
+        formset = CellFormSet()
+
+    context = {'formset': formset}
+    return render(request, "sheet.html", context)
