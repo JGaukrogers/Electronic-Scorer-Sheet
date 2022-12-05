@@ -25,3 +25,5 @@ class PlayersForm(ModelForm):
     class Meta:
         model = Player
         fields = ['pass_number', 'player_name']
+
+    # TODO: override queryset to retrieve the right team
