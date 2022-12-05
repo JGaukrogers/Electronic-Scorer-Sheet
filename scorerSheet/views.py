@@ -1,8 +1,8 @@
 from django.forms import modelformset_factory
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayersForm
-from scorerSheet.models import Cell, Player
+from scorerSheet.models import Cell, Player, Game
 
 
 def update_sheet(request, game_id=0):
@@ -48,19 +48,24 @@ def create_team(request):
 
 
 def add_players(request, game_id):
-    PlayerFormSet = modelformset_factory(Player, PlayersForm, extra=0)
+    PlayerFormSet = modelformset_factory(Player, PlayersForm, extra=3)
+    game = get_object_or_404(Game, pk=game_id)
+
     if request.method == 'POST':
         home_team_formset = PlayerFormSet(request.POST, prefix='home_team_formset')
-        print(home_team_formset) # html with form
 
-        print('=======================================')
-
-        for form in home_team_formset:
-            print(form.cleaned_data)
+        # breakpoint()
+        if home_team_formset.is_valid():
+            for form in home_team_formset:
+                # https://stackoverflow.com/a/29899919
+                if form.is_valid() and form.has_changed():
+                    player = form.save(commit=False)
+                    player.team = game.home_team
+                    player.save()
 
         return redirect('update_sheet')  # todo: add argument / game id
     else:
-        PlayerFormSet = modelformset_factory(Player, PlayersForm, extra=0, min_num=9)
+        PlayerFormSet = modelformset_factory(Player, PlayersForm, extra=3)
 
         home_team_formset = create_player_formset(PlayerFormSet, request, 'home_team_formset')
         guest_team_formset = create_player_formset(PlayerFormSet, request, 'guest_team_formset')
@@ -70,9 +75,6 @@ def add_players(request, game_id):
 
 
 def create_player_formset(PlayerFormSet, request, prefix):
+    # TODO: not much left in this function, can inline in add_players
     home_team_formset = PlayerFormSet(request.POST or None, prefix=prefix)
-    if home_team_formset.is_valid():
-        for form in home_team_formset:
-            print(form.cleaned_data)
-    home_team_formset.save()
     return home_team_formset
