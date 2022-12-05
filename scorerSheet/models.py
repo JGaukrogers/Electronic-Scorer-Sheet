@@ -37,6 +37,7 @@ class Game(models.Model):
 
 
 class Score(models.Model):
+    # TODO: redundant model? This m2m relation is also defined in BattingOrder
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
 
@@ -55,8 +56,10 @@ class Inning(models.Model):
 class BattingOrder(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    # TODO: change name to defensive_position
     position = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(9)])
+        validators=[MinValueValidator(1), MaxValueValidator(9)]
+    )
     enter_inning = models.ForeignKey(Inning, related_name="enter_inning",
                                      on_delete=models.CASCADE)
     exit_inning = models.ForeignKey(Inning, related_name="exit_inning",

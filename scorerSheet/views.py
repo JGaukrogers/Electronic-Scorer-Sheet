@@ -2,7 +2,7 @@ from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayersForm
-from scorerSheet.models import Cell, Player, Game
+from scorerSheet.models import Cell, Player, Game, Score
 
 
 def update_sheet(request, game_id=0):
@@ -47,14 +47,18 @@ def create_team(request):
     return render(request, 'create_team.html', {'form': form})
 
 
-def add_players(request, game_id):
-    PlayerFormSet = modelformset_factory(Player, PlayersForm, extra=3)
+def add_players(request, game_id, team_id):
+    # TODO: this leads to duplicate players, so let's have a simple view for
+    # adding players one by one (like create_team view), then this view is
+    # really for BattingOrder, which if you put that in modelformset_factory
+    # below game and player become dropdowns and user adds position, etc in
+    # tabular form -- this new model formset should support editing as well
+    PlayerFormSetHome = modelformset_factory(Player, PlayersForm, min_num=8, max_num=10)
     game = get_object_or_404(Game, pk=game_id)
 
     if request.method == 'POST':
-        home_team_formset = PlayerFormSet(request.POST, prefix='home_team_formset')
+        home_team_formset = PlayerFormSetHome(request.POST, prefix='home_team_formset')
 
-        # breakpoint()
         if home_team_formset.is_valid():
             for form in home_team_formset:
                 # https://stackoverflow.com/a/29899919
@@ -63,15 +67,18 @@ def add_players(request, game_id):
                     player.team = game.home_team
                     player.save()
 
-        return redirect('update_sheet')  # todo: add argument / game id
-    else:
-        PlayerFormSet = modelformset_factory(Player, PlayersForm, extra=3)
+            return redirect('update_sheet')  # todo: add argument / game id
+        else:
+            # TODO: return to formset view and show error(s)
+            pass
 
-        home_team_formset = create_player_formset(PlayerFormSet, request, 'home_team_formset')
-        guest_team_formset = create_player_formset(PlayerFormSet, request, 'guest_team_formset')
-        context = {'home_team_formset': home_team_formset, 'guest_team_formset': guest_team_formset}
 
-        return render(request, 'add_players.html', context)
+    #home_team_formset = create_player_formset(PlayerFormSet, request, 'home_team_formset')
+    #guest_team_formset = create_player_formset(PlayerFormSet, request, 'guest_team_formset')
+    context = {
+        'home_team_formset': PlayerFormSetHome,
+    }
+    return render(request, 'add_players.html', context)
 
 
 def create_player_formset(PlayerFormSet, request, prefix):
