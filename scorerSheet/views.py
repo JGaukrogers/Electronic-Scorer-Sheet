@@ -74,13 +74,15 @@ def create_player_formset(PlayerFormSet, request, prefix):
 
 
 def add_player(request, game_id, team_id):
+    team = get_object_or_404(Team, pk=team_id)
     if request.method == 'POST':
         form = PlayerForm(request.POST)
         if form.is_valid():
-            form.save()
+            player = form.save(commit=False)
+            player.team = team
+            player.save()
             return redirect('create_batting_order', game_id, team_id)
     else:
-        team = get_object_or_404(Team, pk=team_id)
         data = {'team': team}
         form = PlayerForm(data)
     return render(request, 'add_player.html', {'form': form})
