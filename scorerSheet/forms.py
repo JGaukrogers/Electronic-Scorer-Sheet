@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import ModelForm
 
 from scorerSheet.models import Cell, Game, Team, Player
@@ -24,6 +25,15 @@ class CellForm(ModelForm):
 class PlayerForm(ModelForm):
     class Meta:
         model = Player
-        fields = ['pass_number', 'player_name']
+        fields = '__all__'
+        widgets = {
+            'team': forms.HiddenInput,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PlayerForm, self).__init__(*args, **kwargs)
+        #existing = PricelistProduct.objects.filter(pricelist=pricelist).values_list('product')
+        #self.fields['team'].queryset = Player.objects.exclude(id__in=existing)
+
 
     # TODO: override queryset to retrieve the right team
