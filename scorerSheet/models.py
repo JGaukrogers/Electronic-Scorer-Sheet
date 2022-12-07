@@ -36,15 +36,6 @@ class Game(models.Model):
         return f'Game nr {self.game_number} played in {self.year}'
 
 
-class Score(models.Model):
-    # TODO: redundant model? This m2m relation is also defined in BattingOrder
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.game} player: {self.player}'
-
-
 class Inning(models.Model):
     inning = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)])
@@ -77,7 +68,7 @@ class Cell(models.Model):
     # when deleting, but I am assuming app won't be designed to delete anything
     # at any point
     inning = models.ForeignKey(Inning, on_delete=models.CASCADE)
-    score = models.ForeignKey(Score, on_delete=models.CASCADE)
+    score = models.ForeignKey(BattingOrder, on_delete=models.CASCADE)
     game_moves = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):

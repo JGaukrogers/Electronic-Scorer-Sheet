@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from scorerSheet.models import Inning, Team, Player, Game, Score, Cell
+from scorerSheet.models import Inning, Team, Player, Game, Cell
 
 
 @admin.register(Inning)
@@ -22,11 +22,6 @@ class PlayerAdmin(admin.ModelAdmin):
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     list_display = ['year', 'game_number', 'location']
-
-
-@admin.register(Score)
-class ScoreAdmin(admin.ModelAdmin):
-    list_display = ['game', 'player']
 
 
 @admin.register(Cell)
