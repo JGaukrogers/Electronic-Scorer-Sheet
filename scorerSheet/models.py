@@ -56,8 +56,7 @@ class Inning(models.Model):
 class BattingOrder(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    # TODO: change name to defensive_position
-    position = models.PositiveSmallIntegerField(
+    defensive_position = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(9)]
     )
     enter_inning = models.ForeignKey(Inning, related_name="enter_inning",
@@ -67,7 +66,7 @@ class BattingOrder(models.Model):
 
     def __str__(self):
         return (
-            f'{self.player} @ position: {self.position} '
+            f'{self.player} @ position: {self.defensive_position} '
             f'(entered: {self.enter_inning} exited: {self.exit_inning})'
         )
 
