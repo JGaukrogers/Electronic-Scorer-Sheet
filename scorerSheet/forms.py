@@ -41,11 +41,6 @@ class BattingOrderForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print('In BattingOrderForm')
-        print(args)
-        print(kwargs)
-        #print(self.fields)
-        #print(self)
         #existing = PricelistProduct.objects.filter(pricelist=pricelist).values_list('product')
         #self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
     # TODO: override queryset to retrieve the right team
