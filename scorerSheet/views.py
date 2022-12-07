@@ -1,8 +1,8 @@
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm
-from scorerSheet.models import Cell, Player, Game, Team
+from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, BattingOrderForm
+from scorerSheet.models import Cell, Game, Team, BattingOrder
 
 
 def new_game(request):
@@ -37,29 +37,30 @@ def create_batting_order(request, game_id, team_id):
     # really for BattingOrder, which if you put that in modelformset_factory
     # below game and player become dropdowns and user adds position, etc in
     # tabular form -- this new model formset should support editing as well
-    PlayerFormSetHome = modelformset_factory(Player, PlayerForm, min_num=8, max_num=10)
+    BattingOrderSetForm = modelformset_factory(BattingOrder, BattingOrderForm, min_num=8, max_num=10)
     game = get_object_or_404(Game, pk=game_id)
 
     if request.method == 'POST':
-        home_team_formset = PlayerFormSetHome(request.POST)
-        if home_team_formset.is_valid():
-            for form in home_team_formset:
+        batting_order_formset = BattingOrderSetForm(request.POST, form_kwargs={'team_id': team_id})
+        if batting_order_formset.is_valid():
+            for form in batting_order_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
-                    player = form.save(commit=False)
-                    player.team = game.home_team
-                    player.save()
+                    print(form)
+                    #player = form.save(commit=False)
+                    #player.team = game.home_team
+                    #player.save()
 
             return redirect('update_sheet')  # todo: add argument / game id
         else:
             # TODO: return to formset view and show error(s)
             pass
 
-
     #home_team_formset = create_player_formset(PlayerFormSet, request, 'home_team_formset')
     #guest_team_formset = create_player_formset(PlayerFormSet, request, 'guest_team_formset')
+    batting_order_formset = BattingOrderSetForm
     context = {
-        'home_team_formset': PlayerFormSetHome,
+        'home_team_formset': batting_order_formset,
         'team_name': game.home_team.team_name,
         'game_id': game_id,
         'team_id': team_id,

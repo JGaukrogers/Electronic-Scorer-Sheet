@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from scorerSheet.models import Cell, Game, Team, Player
+from scorerSheet.models import Cell, Game, Team, Player, BattingOrder
 
 
 class TeamForm(ModelForm):
@@ -30,10 +30,23 @@ class PlayerForm(ModelForm):
             'team': forms.HiddenInput,
         }
 
+
+class BattingOrderForm(ModelForm):
+    class Meta:
+        model = BattingOrder
+        fields = '__all__'
+        widgets = {
+            'game': forms.HiddenInput,
+        }
+
     def __init__(self, *args, **kwargs):
-        super(PlayerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        print('In BattingOrderForm')
+        print(args)
+        print(kwargs)
+        #print(self.fields)
+        #print(self)
         #existing = PricelistProduct.objects.filter(pricelist=pricelist).values_list('product')
-        #self.fields['team'].queryset = Player.objects.exclude(id__in=existing)
-
-
+        #self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
     # TODO: override queryset to retrieve the right team
+    # Pass the team id in the kwargs, via instance in the form
