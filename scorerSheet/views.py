@@ -66,12 +66,6 @@ def create_batting_order(request, game_id, team_id):
     return render(request, 'create_batting_order.html', context)
 
 
-def create_player_formset(PlayerFormSet, request, prefix):
-    # TODO: not much left in this function, can inline in create_batting_order
-    home_team_formset = PlayerFormSet(request.POST or None)
-    return home_team_formset
-
-
 def add_player(request, game_id, team_id):
     team = get_object_or_404(Team, pk=team_id)
     if request.method == 'POST':
