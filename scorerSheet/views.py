@@ -56,9 +56,7 @@ def create_batting_order(request, game_id, team_id):
             # TODO: return to formset view and show error(s)
             pass
 
-    #home_team_formset = create_player_formset(PlayerFormSet, request, 'home_team_formset')
-    #guest_team_formset = create_player_formset(PlayerFormSet, request, 'guest_team_formset')
-    batting_order_formset = BattingOrderSetForm
+    batting_order_formset = BattingOrderSetForm(form_kwargs={'team_id': team_id})
     context = {
         'home_team_formset': batting_order_formset,
         'team_name': game.home_team.team_name,

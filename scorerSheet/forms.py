@@ -40,8 +40,6 @@ class BattingOrderForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        team_id = kwargs.pop('team_id')
         super().__init__(*args, **kwargs)
-        #existing = PricelistProduct.objects.filter(pricelist=pricelist).values_list('product')
-        #self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
-    # TODO: override queryset to retrieve the right team
-    # Pass the team id in the kwargs, via instance in the form
+        self.fields['player'].queryset = Player.objects.filter(team__club_number=team_id)
