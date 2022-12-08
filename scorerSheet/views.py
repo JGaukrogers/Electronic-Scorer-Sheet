@@ -73,21 +73,17 @@ def create_player_formset(PlayerFormSet, request, prefix):
 
 
 def add_player(request, game_id, team_id):
+    team = get_object_or_404(Team, pk=team_id)
     if request.method == 'POST':
         form = PlayerForm(request.POST)
         if form.is_valid():
             player = form.save(commit=False)
-            team = get_object_or_404(Team, pk=team_id)
             player.team = team
             player.save()
-        else:
-            # todo: add error message
-            pass
-        form = PlayerForm()
-    else:
-        form = PlayerForm()
-    # TODO: add a second button on view to go back to batting order view
-    return render(request, 'add_player.html', {'form': form})
+    data = {'team': team}
+    form = PlayerForm(data)
+    context = {'form': form, 'game_id': game_id, 'team_id': team_id}
+    return render(request, 'add_player.html', context)
 
 
 def update_sheet(request, game_id=0):
