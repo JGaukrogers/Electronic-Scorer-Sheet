@@ -42,18 +42,18 @@ def create_batting_order(request, game_id, team_id):
 
     if request.method == 'POST':
         batting_order_formset = BattingOrderSetForm(request.POST, form_kwargs={'team_id': team_id})
+        # todo: solve problem: for some reason batting_order_formset is never valid right now
         if batting_order_formset.is_valid():
             for form in batting_order_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
-                    print(form)
-                    #player = form.save(commit=False)
-                    #player.team = game.home_team
-                    #player.save()
+                    batting_order = form.save(commit=False)
+                    batting_order.game = game #TODO @Bob: if we have initial=[{'game': game}] below, do we need this at all?
+                    batting_order.save()
 
             return redirect('update_sheet', game_id)
 
-    batting_order_formset = BattingOrderSetForm(form_kwargs={'team_id': team_id})
+    batting_order_formset = BattingOrderSetForm(initial=[{'game': game}], form_kwargs={'team_id': team_id})
     context = {
         'home_team_formset': batting_order_formset,
         'team_name': game.home_team.team_name,
