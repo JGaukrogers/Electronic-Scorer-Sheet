@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <button type="button">
+        <a href="{% url 'add_player' game_id team_id %}">Add a new player</a>
+    </button>
+</div>
+<div>
+    <form action="" method="post">
+        {% csrf_token %}
+        <h1>Add players for team {{team_name}}</h1>
+        <p>
+            Player's Name - Defensive position
+        </p>
+        {{ home_team_formset.management_form }}
+        {% for form in home_team_formset.forms %}
+        <p>
+        {{ form.player }} {{ form.defensive_position }}
+        </p>
+        {% endfor %}
+        <input type="submit" value="Subit Team">
+    </form>
+</div>
+{% endblock %}

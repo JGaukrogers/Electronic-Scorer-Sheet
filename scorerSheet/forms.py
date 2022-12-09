@@ -1,6 +1,7 @@
+from django import forms
 from django.forms import ModelForm
 
-from scorerSheet.models import Cell, Game, Team, Player
+from scorerSheet.models import Cell, Game, Team, Player, BattingOrder
 
 
 class TeamForm(ModelForm):
@@ -21,7 +22,24 @@ class CellForm(ModelForm):
         fields = '__all__'
 
 
-class PlayersForm(ModelForm):
+class PlayerForm(ModelForm):
     class Meta:
         model = Player
-        fields = ['pass_number', 'player_name']
+        fields = '__all__'
+        widgets = {
+            'team': forms.HiddenInput,
+        }
+
+
+class BattingOrderForm(ModelForm):
+    class Meta:
+        model = BattingOrder
+        fields = '__all__'
+        widgets = {
+            'game': forms.HiddenInput,
+        }
+
+    def __init__(self, *args, **kwargs):
+        team_id = kwargs.pop('team_id')
+        super().__init__(*args, **kwargs)
+        self.fields['player'].queryset = Player.objects.filter(team__club_number=team_id)

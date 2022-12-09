@@ -36,14 +36,6 @@ class Game(models.Model):
         return f'Game nr {self.game_number} played in {self.year}'
 
 
-class Score(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.game} player: {self.player}'
-
-
 class Inning(models.Model):
     inning = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)])
@@ -55,8 +47,9 @@ class Inning(models.Model):
 class BattingOrder(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    position = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(9)])
+    defensive_position = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(9)]
+    )
     enter_inning = models.ForeignKey(Inning, related_name="enter_inning",
                                      on_delete=models.CASCADE)
     exit_inning = models.ForeignKey(Inning, related_name="exit_inning",
@@ -64,7 +57,7 @@ class BattingOrder(models.Model):
 
     def __str__(self):
         return (
-            f'{self.player} @ position: {self.position} '
+            f'{self.player} @ position: {self.defensive_position} '
             f'(entered: {self.enter_inning} exited: {self.exit_inning})'
         )
 
@@ -75,7 +68,7 @@ class Cell(models.Model):
     # when deleting, but I am assuming app won't be designed to delete anything
     # at any point
     inning = models.ForeignKey(Inning, on_delete=models.CASCADE)
-    score = models.ForeignKey(Score, on_delete=models.CASCADE)
+    score = models.ForeignKey(BattingOrder, on_delete=models.CASCADE)
     game_moves = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):

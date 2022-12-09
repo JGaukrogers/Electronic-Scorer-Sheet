@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add a new player</h1>
+<div>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Add player">
+    </form>
+</div>
+<div>
+    <button type="button">
+        <a href="{% url 'create_batting_order' game_id team_id %}">Get back</a>
+    </button>
+</div>
+
+{% endblock %}
