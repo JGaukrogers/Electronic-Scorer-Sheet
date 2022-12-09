@@ -51,10 +51,7 @@ def create_batting_order(request, game_id, team_id):
                     #player.team = game.home_team
                     #player.save()
 
-            return redirect('update_sheet')  # todo: add argument / game id
-        else:
-            # TODO: return to formset view and show error(s)
-            pass
+            return redirect('update_sheet', game_id)
 
     batting_order_formset = BattingOrderSetForm(form_kwargs={'team_id': team_id})
     context = {
@@ -80,7 +77,7 @@ def add_player(request, game_id, team_id):
     return render(request, 'add_player.html', context)
 
 
-def update_sheet(request, game_id=0):
+def update_sheet(request, game_id):
     # TODO: this view should retrieve the relevant cells for game_id
     CellFormSet = modelformset_factory(Cell, CellForm, extra=0)
     if request.method == 'POST':
