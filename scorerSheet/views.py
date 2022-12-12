@@ -43,7 +43,6 @@ def create_batting_order(request, game_id, team_id):
 
     if request.method == 'POST':
         batting_order_formset = BattingOrderSetForm(request.POST, form_kwargs={'team_id': team_id})
-        # todo: solve problem: for some reason batting_order_formset is never valid right now
         if batting_order_formset.is_valid():
             for form in batting_order_formset:
                 # https://stackoverflow.com/a/29899919
@@ -51,13 +50,21 @@ def create_batting_order(request, game_id, team_id):
                     batting_order = form.save(commit=False)
                     batting_order.game = game
                     batting_order.save()
-
-            return redirect('update_sheet', game_id)
+            if game.guest_team.club_number != team_id:
+                team_id = game.guest_team.club_number
+                return redirect('create_batting_order', game_id, team_id)
+            else:
+                return redirect('update_sheet', game_id)
 
     batting_order_formset = BattingOrderSetForm(form_kwargs={'team_id': team_id})
+    if game.home_team.club_number == game_id:
+        team_name = game.home_team.team_name
+    else:
+        team_name = game.guest_team.team_name
+
     context = {
         'home_team_formset': batting_order_formset,
-        'team_name': game.home_team.team_name,
+        'team_name': team_name,
         'game_id': game_id,
         'team_id': team_id,
     }
