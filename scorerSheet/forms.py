@@ -34,7 +34,7 @@ class PlayerForm(ModelForm):
 class BattingOrderForm(ModelForm):
     class Meta:
         model = BattingOrder
-        fields = '__all__'
+        fields = ['player', 'defensive_position', 'enter_inning', 'exit_inning']
         widgets = {
             'game': forms.HiddenInput,
         }

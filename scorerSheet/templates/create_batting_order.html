@@ -16,7 +16,8 @@
         {{ home_team_formset.management_form }}
         {% for form in home_team_formset.forms %}
         <p>
-        {{ form.player }} {{ form.defensive_position }} {{form.enter_inning}}
+        {{form.id}}{{ form.player }} {{ form.defensive_position }}
+        {{form.enter_inning}} {{form.exit_inning}}
         </p>
         {% endfor %}
         <input type="submit" value="Subit Team">
