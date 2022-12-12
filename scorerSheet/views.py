@@ -37,7 +37,8 @@ def create_batting_order(request, game_id, team_id):
     # really for BattingOrder, which if you put that in modelformset_factory
     # below game and player become dropdowns and user adds position, etc in
     # tabular form -- this new model formset should support editing as well
-    BattingOrderSetForm = modelformset_factory(BattingOrder, BattingOrderForm, min_num=8, max_num=10)
+    BattingOrderSetForm = modelformset_factory(BattingOrder, BattingOrderForm,
+                                               min_num=2, max_num=4)
     game = get_object_or_404(Game, pk=game_id)
 
     if request.method == 'POST':
@@ -48,12 +49,12 @@ def create_batting_order(request, game_id, team_id):
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
                     batting_order = form.save(commit=False)
-                    batting_order.game = game #TODO @Bob: if we have initial=[{'game': game}] below, do we need this at all?
+                    batting_order.game = game
                     batting_order.save()
 
             return redirect('update_sheet', game_id)
 
-    batting_order_formset = BattingOrderSetForm(initial=[{'game': game}], form_kwargs={'team_id': team_id})
+    batting_order_formset = BattingOrderSetForm(form_kwargs={'team_id': team_id})
     context = {
         'home_team_formset': batting_order_formset,
         'team_name': game.home_team.team_name,
