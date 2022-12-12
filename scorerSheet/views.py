@@ -10,10 +10,6 @@ def new_game(request):
         form = GameForm(request.POST)
         if form.is_valid():
             created_game = form.save()
-            # TODO: when we create the game I think we also need to make the
-            # Score, BattingOrder and Cell objects, then we redirect to
-            # update_sheet yielding the right game
-
             return redirect('create_batting_order', created_game.id, created_game.home_team.club_number)
     else:
         form = GameForm()
@@ -32,11 +28,6 @@ def create_team(request):
 
 
 def create_batting_order(request, game_id, team_id):
-    # TODO: this leads to duplicate players, so let's have a simple view for
-    # adding players one by one (like create_team view), then this view is
-    # really for BattingOrder, which if you put that in modelformset_factory
-    # below game and player become dropdowns and user adds position, etc in
-    # tabular form -- this new model formset should support editing as well
     BattingOrderSetForm = modelformset_factory(BattingOrder, BattingOrderForm,
                                                min_num=2, max_num=4)
     game = get_object_or_404(Game, pk=game_id)
