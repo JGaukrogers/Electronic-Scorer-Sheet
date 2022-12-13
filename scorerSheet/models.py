@@ -69,6 +69,9 @@ class Cell(models.Model):
     # at any point
     inning = models.ForeignKey(Inning, on_delete=models.CASCADE)
     score = models.ForeignKey(BattingOrder, on_delete=models.CASCADE)
+    position = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(9)]
+    )
     game_moves = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
