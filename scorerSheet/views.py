@@ -10,7 +10,7 @@ def new_game(request):
         form = GameForm(request.POST)
         if form.is_valid():
             created_game = form.save()
-            return redirect('create_batting_order', created_game.id, created_game.home_team.club_number)
+            return redirect('create_lineup', created_game.id, created_game.home_team.club_number)
     else:
         form = GameForm()
     return render(request, 'new_game.html', {'form': form})
@@ -27,7 +27,7 @@ def create_team(request):
     return render(request, 'create_team.html', {'form': form})
 
 
-def create_batting_order(request, game_id, team_id):
+def create_lineup(request, game_id, team_id):
     LineUpSetForm = modelformset_factory(LineUp, LineUpForm,
                                          min_num=2, max_num=4)
     game = get_object_or_404(Game, pk=game_id)
@@ -43,7 +43,7 @@ def create_batting_order(request, game_id, team_id):
                     lineup.save()
             if game.guest_team.club_number != team_id:
                 team_id = game.guest_team.club_number
-                return redirect('create_batting_order', game_id, team_id)
+                return redirect('create_lineup', game_id, team_id)
             else:
                 return redirect('update_sheet', game_id)
 
@@ -59,7 +59,7 @@ def create_batting_order(request, game_id, team_id):
         'game_id': game_id,
         'team_id': team_id,
     }
-    return render(request, 'create_batting_order.html', context)
+    return render(request, 'create_lineup.html', context)
 
 
 def add_player(request, game_id, team_id):
