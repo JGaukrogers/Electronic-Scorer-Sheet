@@ -3,7 +3,9 @@ from django.db import models
 
 
 class Team(models.Model):
+    # TODO: make club_number unique instead of the PK
     club_number = models.IntegerField(primary_key=True)
+#    club_number = models.IntegerField(unique=True)
     team_name = models.CharField(max_length=50)
     location = models.CharField(max_length=50)
 
@@ -44,7 +46,7 @@ class Inning(models.Model):
         return str(self.inning)
 
 
-class BattingOrder(models.Model):
+class LineUp(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     defensive_position = models.PositiveSmallIntegerField(
@@ -68,7 +70,7 @@ class Cell(models.Model):
     # when deleting, but I am assuming app won't be designed to delete anything
     # at any point
     inning = models.ForeignKey(Inning, on_delete=models.CASCADE)
-    score = models.ForeignKey(BattingOrder, on_delete=models.CASCADE)
+    score = models.ForeignKey(LineUp, on_delete=models.CASCADE)
     position = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(9)]
     )
