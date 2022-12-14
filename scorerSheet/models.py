@@ -69,6 +69,7 @@ class Cell(models.Model):
     # btw note that models.CASCADE can destroy a lot of objects recursively
     # when deleting, but I am assuming app won't be designed to delete anything
     # at any point
+    # TODO: the user should not control the number of the inning. Make it private?
     inning = models.ForeignKey(Inning, on_delete=models.CASCADE)
     score = models.ForeignKey(LineUp, on_delete=models.CASCADE)
     position = models.PositiveSmallIntegerField(
