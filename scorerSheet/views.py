@@ -2,7 +2,7 @@ from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
-from scorerSheet.models import Cell, Game, Team, LineUp
+from scorerSheet.models import Cell, Game, Team, LineUp, Inning
 
 
 def new_game(request):
@@ -31,9 +31,10 @@ def create_lineup(request, game_id, team_id):
     LineUpSetForm = modelformset_factory(LineUp, LineUpForm,
                                          min_num=2, max_num=4)
     game = get_object_or_404(Game, pk=game_id)
+    default_enter_inning = Inning.objects.get_or_create(inning=1)
 
     if request.method == 'POST':
-        lineup_formset = LineUpSetForm(request.POST, form_kwargs={'team_id': team_id})
+        lineup_formset = LineUpSetForm(request.POST, form_kwargs={'team_id': team_id}, initial=[{'enter_inning': default_enter_inning}])
         if lineup_formset.is_valid():
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
@@ -47,7 +48,8 @@ def create_lineup(request, game_id, team_id):
             else:
                 return redirect('update_sheet', game_id)
 
-    lineup_formset = LineUpSetForm(form_kwargs={'team_id': team_id})
+    # TODO: when creating a new line-up, i want enter_innint to be 1 (begin of game)
+    lineup_formset = LineUpSetForm(form_kwargs={'team_id': team_id}, initial=[{'enter_inning': default_enter_inning}])
     if game.home_team.club_number == game_id:
         team_name = game.home_team.team_name
     else:
