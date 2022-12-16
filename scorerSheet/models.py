@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Team(models.Model):
-    club_number = models.IntegerField(primary_key=True)
+    club_number = models.IntegerField(unique=True)
     team_name = models.CharField(max_length=50)
     location = models.CharField(max_length=50)
 
@@ -44,7 +44,7 @@ class Inning(models.Model):
         return str(self.inning)
 
 
-class BattingOrder(models.Model):
+class LineUp(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     defensive_position = models.PositiveSmallIntegerField(
@@ -67,8 +67,9 @@ class Cell(models.Model):
     # btw note that models.CASCADE can destroy a lot of objects recursively
     # when deleting, but I am assuming app won't be designed to delete anything
     # at any point
+    # TODO: the user should not control the number of the inning. Make it private?
     inning = models.ForeignKey(Inning, on_delete=models.CASCADE)
-    score = models.ForeignKey(BattingOrder, on_delete=models.CASCADE)
+    score = models.ForeignKey(LineUp, on_delete=models.CASCADE)
     position = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(9)]
     )

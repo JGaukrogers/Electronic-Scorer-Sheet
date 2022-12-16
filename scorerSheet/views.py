@@ -1,8 +1,8 @@
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, BattingOrderForm
-from scorerSheet.models import Cell, Game, Team, BattingOrder
+from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
+from scorerSheet.models import Cell, Game, Team, LineUp, Inning
 
 
 def new_game(request):
@@ -10,7 +10,7 @@ def new_game(request):
         form = GameForm(request.POST)
         if form.is_valid():
             created_game = form.save()
-            return redirect('create_batting_order', created_game.id, created_game.home_team.club_number)
+            return redirect('create_lineup', created_game.id, created_game.home_team.club_number)
     else:
         form = GameForm()
     return render(request, 'new_game.html', {'form': form})
@@ -27,39 +27,43 @@ def create_team(request):
     return render(request, 'create_team.html', {'form': form})
 
 
-def create_batting_order(request, game_id, team_id):
-    BattingOrderSetForm = modelformset_factory(BattingOrder, BattingOrderForm,
-                                               min_num=2, max_num=4)
+def create_lineup(request, game_id, team_id):
+    LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
+                                         min_num=2, max_num=4)
     game = get_object_or_404(Game, pk=game_id)
+    default_enter_inning = Inning.objects.get_or_create(inning=1)
 
     if request.method == 'POST':
-        batting_order_formset = BattingOrderSetForm(request.POST, form_kwargs={'team_id': team_id})
-        if batting_order_formset.is_valid():
-            for form in batting_order_formset:
+        lineup_formset = LineUpFormSet(request.POST,
+                                       form_kwargs={'team_id': team_id},
+                                       initial=[{'enter_inning': default_enter_inning}])
+        if lineup_formset.is_valid():
+            for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
-                    batting_order = form.save(commit=False)
-                    batting_order.game = game
-                    batting_order.save()
+                    lineup = form.save(commit=False)
+                    lineup.game = game
+                    lineup.save()
             if game.guest_team.club_number != team_id:
                 team_id = game.guest_team.club_number
-                return redirect('create_batting_order', game_id, team_id)
+                return redirect('create_lineup', game_id, team_id)
             else:
                 return redirect('update_sheet', game_id)
 
-    batting_order_formset = BattingOrderSetForm(form_kwargs={'team_id': team_id})
+    # TODO: when creating a new line-up, i want enter_innint to be 1 (begin of game)
+    lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id}, initial=[{'enter_inning': default_enter_inning}])
     if game.home_team.club_number == game_id:
         team_name = game.home_team.team_name
     else:
         team_name = game.guest_team.team_name
 
     context = {
-        'home_team_formset': batting_order_formset,
+        'home_team_formset': lineup_formset,
         'team_name': team_name,
         'game_id': game_id,
         'team_id': team_id,
     }
-    return render(request, 'create_batting_order.html', context)
+    return render(request, 'create_lineup.html', context)
 
 
 def add_player(request, game_id, team_id):
@@ -78,7 +82,9 @@ def add_player(request, game_id, team_id):
 
 def update_sheet(request, game_id):
     # TODO: this view should retrieve the relevant cells for game_id
-    CellFormSet = modelformset_factory(Cell, CellForm, extra=0)
+    # TODO: create two scores for the game: one for home team and one for guest team
+    # Cells should belong to one of the two scores
+    CellFormSet = modelformset_factory(Cell, CellForm, extra=0, min_num=9, max_num=1*9)
     if request.method == 'POST':
         formset = CellFormSet(request.POST)
         if formset.is_valid():
@@ -88,5 +94,5 @@ def update_sheet(request, game_id):
     else:
         formset = CellFormSet()
 
-    context = {'formset': formset}
+    context = {'formset': formset, 'init_num_of_cells': 9}
     return render(request, "sheet.html", context)

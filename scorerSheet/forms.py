@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from scorerSheet.models import Cell, Game, Team, Player, BattingOrder
+from scorerSheet.models import Cell, Game, Team, Player, LineUp
 
 
 class TeamForm(ModelForm):
@@ -31,9 +31,9 @@ class PlayerForm(ModelForm):
         }
 
 
-class BattingOrderForm(ModelForm):
+class LineUpForm(ModelForm):
     class Meta:
-        model = BattingOrder
+        model = LineUp
         fields = ['player', 'defensive_position', 'enter_inning', 'exit_inning']
         widgets = {
             'game': forms.HiddenInput,
