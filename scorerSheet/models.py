@@ -3,9 +3,7 @@ from django.db import models
 
 
 class Team(models.Model):
-    # TODO: make club_number unique instead of the PK
-    club_number = models.IntegerField(primary_key=True)
-#    club_number = models.IntegerField(unique=True)
+    club_number = models.IntegerField(unique=True)
     team_name = models.CharField(max_length=50)
     location = models.CharField(max_length=50)
 
