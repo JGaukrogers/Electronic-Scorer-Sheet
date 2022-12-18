@@ -8,11 +8,17 @@
     <form method="POST">
         {% csrf_token %}
         {{ formset.management_form }}
-        {% for form in formset.forms %}
-        <ul>
-            {{ form.as_ul }}
-        </ul>
-        {% endfor %}
+
+        <table>
+            {% for form in formset.forms %}
+            <tr>
+                <td>{{form.inning.value}}</td>
+                <td>{{form.score}}</td>
+                <td>{{form.game_moves}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
         <br>
         <input name="submit" type="submit" value="Submit">
     </form>

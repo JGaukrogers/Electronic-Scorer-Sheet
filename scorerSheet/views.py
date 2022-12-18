@@ -1,5 +1,5 @@
 from django.forms import modelformset_factory
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
 from scorerSheet.models import Cell, Game, Team, LineUp, Inning
@@ -84,6 +84,10 @@ def update_sheet(request, game_id):
     # TODO: this view should retrieve the relevant cells for game_id
     # TODO: create two scores for the game: one for home team and one for guest team
     # Cells should belong to one of the two scores
+
+    game = get_object_or_404(Game, pk=game_id)
+
+    default_enter_inning = Inning.objects.get_or_create(inning=1)
     CellFormSet = modelformset_factory(Cell, CellForm, extra=0, min_num=9, max_num=1*9)
     if request.method == 'POST':
         formset = CellFormSet(request.POST)
@@ -92,7 +96,12 @@ def update_sheet(request, game_id):
                 print(form.cleaned_data)
             formset.save()
     else:
-        formset = CellFormSet()
+        line_up_elements = get_list_or_404(LineUp, game=game)
+        formset = CellFormSet(initial=[{'enter_inning': default_enter_inning}])
+        for form in formset:
+            form.fields['score'].initial = line_up_elements[0]
+            form.fields['inning'].initial = default_enter_inning
+            form.save(commit=False)
 
     context = {'formset': formset, 'init_num_of_cells': 9}
     return render(request, "sheet.html", context)
