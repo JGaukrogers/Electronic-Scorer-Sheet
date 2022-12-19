@@ -19,7 +19,7 @@ class GameForm(ModelForm):
 class CellForm(ModelForm):
     class Meta:
         model = Cell
-        fields = '__all__'
+        fields = '__all__'  # inning, score, position, game_moves
 
 
 class PlayerForm(ModelForm):

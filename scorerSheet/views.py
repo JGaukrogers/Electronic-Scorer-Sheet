@@ -86,22 +86,40 @@ def update_sheet(request, game_id):
     # Cells should belong to one of the two scores
 
     game = get_object_or_404(Game, pk=game_id)
+    line_up_elements = get_list_or_404(LineUp, game=game)  # TODO: could be get_object?
 
-    default_enter_inning = Inning.objects.get_or_create(inning=1)
+    default_enter_inning, created = Inning.objects.get_or_create(inning=1)
+
     CellFormSet = modelformset_factory(Cell, CellForm, extra=0, min_num=9, max_num=1*9)
+
     if request.method == 'POST':
-        formset = CellFormSet(request.POST)
+        formset = CellFormSet(request.POST) #, initial=initial)
         if formset.is_valid():
             for form in formset:
                 print(form.cleaned_data)
             formset.save()
     else:
-        line_up_elements = get_list_or_404(LineUp, game=game)
-        formset = CellFormSet(initial=[{'enter_inning': default_enter_inning}])
+        initial = [
+            {
+                'inning': inning,
+                'position': position,
+                'score': score,
+            }
+            for inning, position, score in zip(
+                [default_enter_inning] * 9,  # TODO: make 9 a var
+                range(1, 9 + 1),
+                [line_up_elements[0]] * 9
+            )
+        ]
+        formset = CellFormSet(initial=initial)
+
+        # FormSet(initial=[{'id': x.id} for x in some_objects])
+        """
         for form in formset:
             form.fields['score'].initial = line_up_elements[0]
-            form.fields['inning'].initial = default_enter_inning
+            #form.fields['inning'].initial = default_enter_inning
             form.save(commit=False)
+        """
 
     context = {'formset': formset, 'init_num_of_cells': 9}
     return render(request, "sheet.html", context)

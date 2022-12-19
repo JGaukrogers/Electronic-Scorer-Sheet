@@ -12,8 +12,10 @@
         <table>
             {% for form in formset.forms %}
             <tr>
-                <td>{{form.inning.value}}</td>
+                <td>{{form.inning.initial}}</td>
+                <td>{{form.inning.as_hidden}}</td>
                 <td>{{form.score}}</td>
+                <td>{{form.position}}</td>
                 <td>{{form.game_moves}}</td>
             </tr>
             {% endfor %}
