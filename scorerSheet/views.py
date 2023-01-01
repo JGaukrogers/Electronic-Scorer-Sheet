@@ -52,7 +52,7 @@ def create_lineup(request, game_id, team_id):
 
     # TODO: when creating a new line-up, i want enter_innint to be 1 (begin of game)
     lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id}, initial=[{'enter_inning': default_enter_inning}])
-    if game.home_team.club_number == game_id:
+    if game.home_team.club_number == team_id:
         team_name = game.home_team.team_name
     else:
         team_name = game.guest_team.team_name
