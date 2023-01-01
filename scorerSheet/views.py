@@ -32,7 +32,6 @@ def create_lineup(request, game_id, team_id):
                                          min_num=2, max_num=4)
     game = get_object_or_404(Game, pk=game_id)
     default_enter_inning = Inning.objects.get_or_create(inning=1)
-
     if request.method == 'POST':
         lineup_formset = LineUpFormSet(request.POST,
                                        form_kwargs={'team_id': team_id},
@@ -41,9 +40,12 @@ def create_lineup(request, game_id, team_id):
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
-                    lineup = form.save(commit=False)
-                    lineup.game = game
-                    lineup.save()
+                    # TODO: save forms for both teams as separate forms, instead of an update
+                    form.save()
+                    # TODO: is this needed?
+                    #lineup = form.save(commit=False)
+                    #lineup.game = game
+                    #lineup.save()
             if game.guest_team.club_number != team_id:
                 team_id = game.guest_team.club_number
                 return redirect('create_lineup', game_id, team_id)
