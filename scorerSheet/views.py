@@ -1,3 +1,5 @@
+from builtins import breakpoint
+
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 
@@ -88,8 +90,8 @@ def update_sheet(request, game_id):
     # Cells should belong to one of the two scores
 
     NUMBER_PLAYERS_PER_INNING = 9
-    INITAIALLY_DIPLAYED_INNINGS = 1
-    INITAIALLY_DIPLAYED_CELLS = NUMBER_PLAYERS_PER_INNING * INITAIALLY_DIPLAYED_INNINGS
+    INITIALLY_DIPLAYED_INNINGS = 1
+    INITIALLY_DIPLAYED_CELLS = NUMBER_PLAYERS_PER_INNING * INITIALLY_DIPLAYED_INNINGS
 
     game = get_object_or_404(Game, pk=game_id)
     line_up_elements = get_list_or_404(LineUp, game=game)  # TODO: could be get_object?
@@ -104,6 +106,10 @@ def update_sheet(request, game_id):
             for form in formset:
                 print(form.cleaned_data)
             formset.save()
+        else:
+            for form in formset:
+                if form.is_valid():
+                    form.save()
     else:
         initial = [
             {
@@ -127,5 +133,5 @@ def update_sheet(request, game_id):
             form.save(commit=False)
         """
 
-    context = {'formset': formset, 'init_num_of_cells': INITAIALLY_DIPLAYED_CELLS}
+    context = {'formset': formset, 'init_num_of_cells': INITIALLY_DIPLAYED_CELLS} # TODO: is init_num_of_cells used?
     return render(request, "sheet.html", context)
