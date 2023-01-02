@@ -12,14 +12,15 @@
         <table>
             <tr>
                 <td>Player</td>
-                <td>Pos.</td>
+                <td>Batting pos.</td>
                 <td>Inning</td>
                 <td> </td>
             </tr>
             {% for form in formset.forms %}
             <tr>
                 <td>{{form.score}}</td>
-                <td>{{form.position}}</td>
+                <td>{{form.position.initial}}</td>
+                <td>{{form.position.as_hidden}}</td>
                 <td>{{form.inning.initial}}</td>
                 <td>{{form.inning.as_hidden}}</td>
                 <td>{{form.game_moves}}</td>
