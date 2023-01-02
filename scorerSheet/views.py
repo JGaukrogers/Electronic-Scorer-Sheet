@@ -87,6 +87,10 @@ def update_sheet(request, game_id):
     # TODO: create two scores for the game: one for home team and one for guest team
     # Cells should belong to one of the two scores
 
+    NUMBER_PLAYERS_PER_INNING = 9
+    INITAIALLY_DIPLAYED_INNINGS = 1
+    INITAIALLY_DIPLAYED_CELLS = NUMBER_PLAYERS_PER_INNING * INITAIALLY_DIPLAYED_INNINGS
+
     game = get_object_or_404(Game, pk=game_id)
     line_up_elements = get_list_or_404(LineUp, game=game)  # TODO: could be get_object?
 
@@ -108,9 +112,9 @@ def update_sheet(request, game_id):
                 'score': score,
             }
             for inning, position, score in zip(
-                [default_enter_inning] * 9,  # TODO: make 9 a var
-                range(1, 9 + 1),
-                [line_up_elements[0]] * 9
+                [default_enter_inning] * NUMBER_PLAYERS_PER_INNING,
+                range(1, NUMBER_PLAYERS_PER_INNING + 1),
+                [line_up_elements[0]] * NUMBER_PLAYERS_PER_INNING
             )
         ]
         formset = CellFormSet(initial=initial)
@@ -123,5 +127,5 @@ def update_sheet(request, game_id):
             form.save(commit=False)
         """
 
-    context = {'formset': formset, 'init_num_of_cells': 9}
+    context = {'formset': formset, 'init_num_of_cells': INITAIALLY_DIPLAYED_CELLS}
     return render(request, "sheet.html", context)
