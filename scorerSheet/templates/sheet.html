@@ -10,12 +10,18 @@
         {{ formset.management_form }}
 
         <table>
+            <tr>
+                <td>Player</td>
+                <td>Pos.</td>
+                <td>In</td>
+                <td> </td>
+            </tr>
             {% for form in formset.forms %}
             <tr>
-                <td>{{form.inning.initial}}</td>
-                <td>{{form.inning.as_hidden}}</td>
                 <td>{{form.score}}</td>
                 <td>{{form.position}}</td>
+                <td>{{form.inning.initial}}</td>
+                <td>{{form.inning.as_hidden}}</td>
                 <td>{{form.game_moves}}</td>
             </tr>
             {% endfor %}
