@@ -43,11 +43,10 @@ def create_lineup(request, game_id, team_id):
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
                     # TODO: save forms for both teams as separate forms, instead of an update
-                    form.save()
-                    # TODO: is this needed?
-                    #lineup = form.save(commit=False)
-                    #lineup.game = game
-                    #lineup.save()
+                    lineup = form.save(commit=False)
+                    lineup.game = game
+                    lineup.save()
+
             if game.guest_team.club_number != team_id:
                 team_id = game.guest_team.club_number
                 return redirect('create_lineup', game_id, team_id)
