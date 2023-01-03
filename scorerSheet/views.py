@@ -42,10 +42,12 @@ def create_lineup(request, game_id, team_id):
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
-                    # TODO: save forms for both teams as separate forms, instead of an update
-                    lineup = form.save(commit=False)
-                    lineup.game = game
-                    lineup.save()
+                    new_lineup = LineUp()
+                    new_lineup.game = game
+                    new_lineup.player = form.cleaned_data['player']
+                    new_lineup.defensive_position = form.cleaned_data['defensive_position']
+                    new_lineup.enter_inning = form.cleaned_data['enter_inning']
+                    new_lineup.save()
 
             if game.guest_team.club_number != team_id:
                 team_id = game.guest_team.club_number
@@ -53,7 +55,7 @@ def create_lineup(request, game_id, team_id):
             else:
                 return redirect('update_sheet', game_id)
 
-    # TODO: when creating a new line-up, i want enter_innint to be 1 (begin of game)
+    # TODO: when creating a new line-up, i want enter_inning to be 1 (begin of game)
     lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id}, initial=[{'enter_inning': default_enter_inning}])
     if game.home_team.club_number == team_id:
         team_name = game.home_team.team_name
@@ -61,7 +63,7 @@ def create_lineup(request, game_id, team_id):
         team_name = game.guest_team.team_name
 
     context = {
-        'home_team_formset': lineup_formset,
+        'home_team_formset': lineup_formset, #TODO: change name of home_team_formset
         'team_name': team_name,
         'game_id': game_id,
         'team_id': team_id,
@@ -99,7 +101,7 @@ def update_sheet(request, game_id):
 
     if request.method == 'POST':
         # TODO: it must be possible to overwrite cells: this is important in case the user enters new data
-        formset = CellFormSet(request.POST) #, initial=initial)
+        formset = CellFormSet(request.POST)
         if formset.is_valid():
             for form in formset:
                 print(form.cleaned_data)
