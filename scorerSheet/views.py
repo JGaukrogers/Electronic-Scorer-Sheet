@@ -99,6 +99,7 @@ def update_sheet(request, game_id):
     CellFormSet = modelformset_factory(Cell, CellForm, extra=0, min_num=9, max_num=1*9)
 
     if request.method == 'POST':
+        # TODO: it must be possible to overwrite cells: this is important in case the user enters new data
         formset = CellFormSet(request.POST) #, initial=initial)
         if formset.is_valid():
             for form in formset:
