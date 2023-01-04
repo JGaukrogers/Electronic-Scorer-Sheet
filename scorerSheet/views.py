@@ -10,9 +10,10 @@ from scorerSheet.models import Cell, Game, Team, LineUp, Inning
 def new_game(request):
     if request.method == 'POST':
         form = GameForm(request.POST)
+        breakpoint()
         if form.is_valid():
             created_game = form.save()
-            return redirect('create_lineup', created_game.id, created_game.home_team.club_number)
+            return redirect('create_lineup', created_game.id, created_game.home_team.id)
     else:
         form = GameForm()
     return render(request, 'new_game.html', {'form': form})
@@ -31,6 +32,7 @@ def create_team(request):
 
 def create_lineup(request, game_id, team_id):
     LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
+                                         # can_order=True,
                                          min_num=2, max_num=4)
     game = get_object_or_404(Game, pk=game_id)
     default_enter_inning = Inning.objects.get_or_create(inning=1)
@@ -54,9 +56,12 @@ def create_lineup(request, game_id, team_id):
                 return redirect('create_lineup', game_id, team_id)
             else:
                 return redirect('update_sheet', game_id)
+                # return redirect('update_sheet', game_id, game.guest_team.id)
 
     # TODO: when creating a new line-up, i want enter_inning to be 1 (begin of game)
-    lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id}, initial=[{'enter_inning': default_enter_inning}])
+    lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
+    for lineup in lineup_formset:
+        lineup.fields['enter_inning'].initial = default_enter_inning
     if game.home_team.club_number == team_id:
         team_name = game.home_team.team_name
     else:
@@ -120,7 +125,8 @@ def update_sheet(request, game_id):
             for inning, position, score in zip(
                 [default_enter_inning] * NUMBER_PLAYERS_PER_INNING,
                 range(1, NUMBER_PLAYERS_PER_INNING + 1),
-                [line_up_elements[0]] * NUMBER_PLAYERS_PER_INNING
+                # To make sure none is preselected: it is better than the first player in the DB is always preselected
+                [None] * NUMBER_PLAYERS_PER_INNING
             )
         ]
         formset = CellFormSet(initial=initial)
