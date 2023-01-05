@@ -21,6 +21,11 @@ class CellForm(ModelForm):
         model = Cell
         fields = '__all__'  # inning, score, position, game_moves
 
+    def __init__(self, *args, **kwargs):
+        team_id = kwargs.pop('team_id')
+        super().__init__(*args, **kwargs)
+        self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id)
+
 
 class PlayerForm(ModelForm):
     class Meta:

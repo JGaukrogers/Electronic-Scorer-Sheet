@@ -102,7 +102,7 @@ def update_sheet(request, game_id, team_id):
 
     if request.method == 'POST':
         # TODO: it must be possible to overwrite cells: this is important in case the user enters new data
-        formset = CellFormSet(request.POST)
+        formset = CellFormSet(request.POST, form_kwargs={'team_id': team_id})
         if formset.is_valid():
             for form in formset:
                 print(form.cleaned_data)
@@ -125,7 +125,7 @@ def update_sheet(request, game_id, team_id):
                 [None] * NUMBER_PLAYERS_PER_INNING
             )
         ]
-        formset = CellFormSet(initial=initial)
+        formset = CellFormSet(initial=initial, form_kwargs={'team_id': team_id})
 
         # FormSet(initial=[{'id': x.id} for x in some_objects])
         """
