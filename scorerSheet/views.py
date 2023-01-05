@@ -1,5 +1,3 @@
-from builtins import breakpoint
-
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 
@@ -10,7 +8,6 @@ from scorerSheet.models import Cell, Game, Team, LineUp, Inning
 def new_game(request):
     if request.method == 'POST':
         form = GameForm(request.POST)
-        breakpoint()
         if form.is_valid():
             created_game = form.save()
             return redirect('create_lineup', created_game.id, created_game.home_team.id)
@@ -33,7 +30,7 @@ def create_team(request):
 def create_lineup(request, game_id, team_id):
     LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
                                          # can_order=True,
-                                         min_num=2, max_num=4)
+                                         min_num=2, max_num=3)
     game = get_object_or_404(Game, pk=game_id)
     default_enter_inning = Inning.objects.get_or_create(inning=1)
     if request.method == 'POST':
