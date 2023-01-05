@@ -51,8 +51,8 @@ def create_lineup(request, game_id, team_id):
                     new_lineup.enter_inning = form.cleaned_data['enter_inning']
                     new_lineup.save()
 
-            if game.guest_team.club_number != team_id:
-                team_id = game.guest_team.club_number
+            if game.guest_team.id != team_id:
+                team_id = game.guest_team.id
                 return redirect('create_lineup', game_id, team_id)
             else:
                 return redirect('update_sheet', game_id)
@@ -62,7 +62,7 @@ def create_lineup(request, game_id, team_id):
     lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
     for lineup in lineup_formset:
         lineup.fields['enter_inning'].initial = default_enter_inning
-    if game.home_team.club_number == team_id:
+    if game.home_team.id == team_id:
         team_name = game.home_team.team_name
     else:
         team_name = game.guest_team.team_name

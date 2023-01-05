@@ -42,4 +42,4 @@ class LineUpForm(ModelForm):
     def __init__(self, *args, **kwargs):
         team_id = kwargs.pop('team_id')
         super().__init__(*args, **kwargs)
-        self.fields['player'].queryset = Player.objects.filter(team__club_number=team_id)
+        self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
