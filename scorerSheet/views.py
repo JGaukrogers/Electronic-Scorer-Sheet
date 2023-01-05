@@ -53,8 +53,7 @@ def create_lineup(request, game_id, team_id):
                 team_id = game.guest_team.id
                 return redirect('create_lineup', game_id, team_id)
             else:
-                return redirect('update_sheet', game_id)
-                # return redirect('update_sheet', game_id, game.guest_team.id)
+                return redirect('update_sheet', game_id, game.home_team.id)
 
     lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
     for lineup in lineup_formset:
@@ -87,7 +86,7 @@ def add_player(request, game_id, team_id):
     return render(request, 'add_player.html', context)
 
 
-def update_sheet(request, game_id):
+def update_sheet(request, game_id, team_id):
     # TODO: this view should retrieve the relevant cells for game_id
     # TODO: create two scores for the game: one for home team and one for guest team
     # Cells should belong to one of the two scores
