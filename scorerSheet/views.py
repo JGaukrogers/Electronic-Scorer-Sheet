@@ -41,6 +41,7 @@ def create_lineup(request, game_id, team_id):
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
+                    # TODO - problem with this: you can't modify existing players, only create new ones
                     new_lineup = LineUp()
                     new_lineup.game = game
                     new_lineup.player = form.cleaned_data['player']
@@ -55,7 +56,6 @@ def create_lineup(request, game_id, team_id):
                 return redirect('update_sheet', game_id)
                 # return redirect('update_sheet', game_id, game.guest_team.id)
 
-    # TODO: when creating a new line-up, i want enter_inning to be 1 (begin of game)
     lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
     for lineup in lineup_formset:
         lineup.fields['enter_inning'].initial = default_enter_inning
@@ -65,7 +65,7 @@ def create_lineup(request, game_id, team_id):
         team_name = game.guest_team.team_name
 
     context = {
-        'home_team_formset': lineup_formset, #TODO: change name of home_team_formset
+        'team_formset': lineup_formset, #TODO: change name of home_team_formset
         'team_name': team_name,
         'game_id': game_id,
         'team_id': team_id,

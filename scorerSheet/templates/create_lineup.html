@@ -17,8 +17,8 @@
                 <td>Defensive position</td>
                 <td>Enter Inning</td>
             </tr>
-        {{ home_team_formset.management_form }}
-        {% for form in home_team_formset.forms %}
+        {{ team_formset.management_form }}
+        {% for form in team_formset.forms %}
             <tr>
                 <td>{{form.id}}</td>
                 <td>{{form.player}}</td>
