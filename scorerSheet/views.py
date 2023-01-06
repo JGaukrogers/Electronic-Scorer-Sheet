@@ -4,6 +4,9 @@ from django.shortcuts import render, redirect, get_object_or_404, get_list_or_40
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
 from scorerSheet.models import Cell, Game, Team, LineUp, Inning
 
+NUMBER_INITIAL_INNINGS = 5
+NUMBER_PLAYERS_PER_INNING = 9
+
 
 def new_game(request):
     if request.method == 'POST':
@@ -27,6 +30,17 @@ def create_team(request):
     return render(request, 'create_team.html', {'form': form})
 
 
+def create_cells_for_lineup(lineup: LineUp):
+    # I only want to retrieve or get once the inning
+    inning_list = []
+    for i in range(1, NUMBER_INITIAL_INNINGS+1):
+        inning_list.append(Inning.objects.get_or_create(inning=i)[0])
+
+    for i in range(0, NUMBER_INITIAL_INNINGS):
+        cell = Cell(inning = inning_list[i], score=lineup, position = lineup.defensive_position)
+        cell.save()
+
+
 def create_lineup(request, game_id, team_id):
     LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
                                          # can_order=True,
@@ -48,6 +62,8 @@ def create_lineup(request, game_id, team_id):
                     new_lineup.defensive_position = form.cleaned_data['defensive_position']
                     new_lineup.enter_inning = form.cleaned_data['enter_inning']
                     new_lineup.save()
+
+                    create_cells_for_lineup(new_lineup)
 
             if game.guest_team.id != team_id:
                 team_id = game.guest_team.id
@@ -90,8 +106,6 @@ def update_sheet(request, game_id, team_id):
     # TODO: this view should retrieve the relevant cells for game_id
     # TODO: create two scores for the game: one for home team and one for guest team
     # Cells should belong to one of the two scores
-
-    NUMBER_PLAYERS_PER_INNING = 9
 
     game = get_object_or_404(Game, pk=game_id)
     line_up_elements = get_list_or_404(LineUp, game=game)  # TODO: could be get_object?
