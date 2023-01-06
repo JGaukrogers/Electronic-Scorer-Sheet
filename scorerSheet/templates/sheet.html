@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Hello Scorer</h1>
+<h1>{{which_team}}: {{team_name}}</h1>
 
 
 <div>
@@ -31,6 +31,12 @@
         <br>
         <input name="submit" type="submit" value="Submit">
     </form>
+</div>
+<br/>
+<div>
+    <button type="button">
+        <a href="{% url 'update_sheet' game_id other_team_id %}">Switch Score Sheet</a>
+    </button>
 </div>
 
 {% endblock %}

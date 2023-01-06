@@ -135,5 +135,15 @@ def update_sheet(request, game_id, team_id):
             form.save(commit=False)
         """
 
-    context = {'formset': formset}
+    team_to_show = get_object_or_404(Team, pk=team_id)
+    if game.home_team.id == team_id:
+        other_team_id = game.guest_team.id
+        which_team = 'Home'
+    else:
+        other_team_id = game.home_team.id
+        which_team = 'Guest'
+    context = {'formset': formset, 'team_name': team_to_show.team_name,
+               'game_id': game_id,
+               'other_team_id': other_team_id,
+               'which_team': which_team}
     return render(request, "sheet.html", context)
