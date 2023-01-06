@@ -23,8 +23,15 @@ class CellForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         team_id = kwargs.pop('team_id')
+        player_pass_nr = None
+        if 'player' in kwargs:
+            player_pass_nr = kwargs.pop('player')
         super().__init__(*args, **kwargs)
-        self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id)
+        if player_pass_nr:
+            self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id,
+                                                                  player__pass_number=player_pass_nr)
+        else:
+            self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id)
 
 
 class PlayerForm(ModelForm):
