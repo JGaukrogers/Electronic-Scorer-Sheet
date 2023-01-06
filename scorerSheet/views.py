@@ -30,17 +30,6 @@ def create_team(request):
     return render(request, 'create_team.html', {'form': form})
 
 
-def create_cells_for_lineup(lineup: LineUp):
-    # I only want to retrieve or get once the inning
-    inning_list = []
-    for i in range(1, NUMBER_INITIAL_INNINGS+1):
-        inning_list.append(Inning.objects.get_or_create(inning=i)[0])
-
-    for i in range(0, NUMBER_INITIAL_INNINGS):
-        cell = Cell(inning = inning_list[i], score=lineup, position = lineup.defensive_position)
-        cell.save()
-
-
 def create_lineup(request, game_id, team_id):
     LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
                                          # can_order=True,
@@ -55,14 +44,7 @@ def create_lineup(request, game_id, team_id):
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
-                    # TODO - problem with this: you can't modify existing players, only create new ones
-                    new_lineup = LineUp()
-                    new_lineup.game = game
-                    new_lineup.player = form.cleaned_data['player']
-                    new_lineup.defensive_position = form.cleaned_data['defensive_position']
-                    new_lineup.enter_inning = form.cleaned_data['enter_inning']
-                    new_lineup.save()
-
+                    new_lineup = save_new_lineup_element(form, game)
                     create_cells_for_lineup(new_lineup)
 
             if game.guest_team.id != team_id:
@@ -86,6 +68,28 @@ def create_lineup(request, game_id, team_id):
         'team_id': team_id,
     }
     return render(request, 'create_lineup.html', context)
+
+
+def save_new_lineup_element(form, game):
+    # TODO - problem with this: you can't modify existing players, only create new ones
+    new_lineup = LineUp()
+    new_lineup.game = game
+    new_lineup.player = form.cleaned_data['player']
+    new_lineup.defensive_position = form.cleaned_data['defensive_position']
+    new_lineup.enter_inning = form.cleaned_data['enter_inning']
+    new_lineup.save()
+    return new_lineup
+
+
+def create_cells_for_lineup(lineup: LineUp):
+    # I only want to retrieve or get once the inning
+    inning_list = []
+    for i in range(1, NUMBER_INITIAL_INNINGS+1):
+        inning_list.append(Inning.objects.get_or_create(inning=i)[0])
+
+    for i in range(0, NUMBER_INITIAL_INNINGS):
+        cell = Cell(inning = inning_list[i], score=lineup, position = lineup.defensive_position)
+        cell.save()
 
 
 def add_player(request, game_id, team_id):
