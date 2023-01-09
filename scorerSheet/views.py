@@ -125,13 +125,14 @@ def update_sheet(request, game_id, team_id):
 
     if request.method == 'POST':
         # TODO: it must be possible to overwrite cells: this is important in case the user enters new data
-        cell_formset = CellFormSet(request.POST, form_kwargs={'team_id': team_id})
-        if cell_formset.is_valid():
-            for form in cell_formset:
+        cell_formset_list = CellFormSet(request.POST, form_kwargs={'team_id': team_id})
+        breakpoint()
+        if cell_formset_list.is_valid():
+            for form in cell_formset_list:
                 print(form.cleaned_data)
-            cell_formset.save()
+            cell_formset_list.save()
         else:
-            for form in cell_formset:
+            for form in cell_formset_list:
                 if form.is_valid():
                     form.save()
     else:
@@ -149,13 +150,13 @@ def update_sheet(request, game_id, team_id):
             # )
         ]
         cell_formset_list = []
-        breakpoint()
+        # breakpoint()
         for team_line_up in line_up_elements_for_team:
             cell_formset = CellFormSet(initial=initial,
                                        form_kwargs={'team_id': team_id, 'player': team_line_up.player.pass_number})
             cell_formset_list.append(cell_formset)
 
-        breakpoint()
+        # breakpoint()
         # FormSet(initial=[{'id': x.id} for x in some_objects])
         """
         for form in formset:
@@ -174,10 +175,12 @@ def update_sheet(request, game_id, team_id):
 
 
 
-    context = {'cell_formset': cell_formset,
-               'team_name': team_to_show.team_name,
-               'game_id': game_id,
-               'other_team_id': other_team_id,
-               'which_team': which_team,
-               'line_up': line_up_elements_for_team}
+    context = {
+        # 'cell_formset': cell_formset,
+        'team_name': team_to_show.team_name,
+        'game_id': game_id,
+        'other_team_id': other_team_id,
+        'which_team': which_team,
+        'line_up': cell_formset_list
+    }
     return render(request, "sheet.html", context)
