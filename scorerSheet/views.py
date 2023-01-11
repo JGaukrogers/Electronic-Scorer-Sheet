@@ -128,23 +128,29 @@ def update_sheet(request, game_id, team_id):
     cell_formset_list = []
 
     if request.method == 'POST':
-        cell_formset = CellFormSet(
-            request.POST,
-            # not sure if needed here yet:
-            # queryset=Cell.objects.filter(
-            #    score__in=line_up_ids
-            # ),
-            form_kwargs={
-                'team_id': team_id,
-                #'player': team_line_up.player.pass_number
-            }
-        )
+        aux = []
+        for line_up_id in line_up_ids:
+            cell_formset = CellFormSet(
+                request.POST,
+                # not sure if needed here yet:
+                # queryset=Cell.objects.filter(
+                #    score__in=line_up_ids
+                # ),
+                form_kwargs={
+                    'team_id': team_id,
+                    'player': line_up_id
+                }
+            )
+            aux.append(cell_formset)
         # TODO: not yet tested
-        if cell_formset.is_valid():
-            cell_formset.save()
+        breakpoint()
+        # if cell_formset.is_valid():
+        #     cell_formset.save()
+        # else:
+        #     for cell_form in cell_formset.forms:
+        #         print(cell_form.is_valid())
 
-    else:
-        cell_formset_list = get_cells_by_player(CellFormSet, line_up_ids, team_id)
+    cell_formset_list = get_cells_by_player(CellFormSet, line_up_ids, team_id)
 
     if game.home_team.id == team_id:
         other_team_id = game.guest_team.id
