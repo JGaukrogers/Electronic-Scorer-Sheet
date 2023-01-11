@@ -1,5 +1,5 @@
 from django.forms import modelformset_factory
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
 from scorerSheet.models import Cell, Game, Team, LineUp, Inning
@@ -107,81 +107,45 @@ def add_player(request, game_id, team_id):
 
 
 def update_sheet(request, game_id, team_id):
-    # TODO: this view should retrieve the relevant cells for game_id
-    # TODO: create two scores for the game: one for home team and one for guest team
-    # Cells should belong to one of the two scores
-
     game = get_object_or_404(Game, pk=game_id)
+    team = get_object_or_404(Team, pk=team_id)
 
-    line_up_elements = get_list_or_404(LineUp, game=game)  # TODO: could be get_object?
-    line_up_elements_for_team = []
+    line_up_ids = LineUp.objects.select_related(
+        "player"
+    ).filter(
+        game=game, player__team=team
+    ).values_list(
+        "id",
+        flat=True
+    )
 
-    for element in line_up_elements:
-        if element.player.team.id == team_id:
-            line_up_elements_for_team.append(element)
+    CellFormSet = modelformset_factory(
+        Cell,
+        CellForm,
+        extra=0,
+    )
 
-    CellFormSet = modelformset_factory(Cell, CellForm, extra=0, min_num=NUMBER_PLAYERS_PER_INNING, max_num=1*NUMBER_PLAYERS_PER_INNING)
+    cell_formset_list = []
 
     if request.method == 'POST':
-        # TODO: it must be possible to overwrite cells: this is important in case the user enters new data
+        cell_formset = CellFormSet(
+            request.POST,
+            # not sure if needed here yet:
+            # queryset=Cell.objects.filter(
+            #    score__in=line_up_ids
+            # ),
+            form_kwargs={
+                'team_id': team_id,
+                #'player': team_line_up.player.pass_number
+            }
+        )
+        # TODO: not yet tested
+        if cell_formset.is_valid():
+            cell_formset.save()
 
-        cell_formset_list = []
-        for team_line_up in line_up_elements_for_team:
-            cell_formset = CellFormSet(request.POST,
-                                       form_kwargs={'team_id': team_id, 'player': team_line_up.player.pass_number})
-            cell_formset_list.append(cell_formset)
-
-        breakpoint()
-        for cell_formset in cell_formset_list:
-            if cell_formset.is_valid():
-                breakpoint()
-                cell_formset.save()
-            else:
-                breakpoint()
-                for cell in cell_formset:
-                    if cell.is_valid():
-                        cell.save()
-        # cell_formset_list = CellFormSet(request.POST, form_kwargs={'team_id': team_id})
-        # breakpoint()
-        # if cell_formset_list.is_valid():
-        #     for form in cell_formset_list:
-        #         print(form.cleaned_data)
-        #     cell_formset_list.save()
-        # else:
-        #     # breakpoint()
-        #     for form in cell_formset_list:
-        #         breakpoint()
-        #         if form.is_valid():
-        #             form.save()
     else:
-        initial = [
-            # {
-            #     'inning': inning,
-            #     'position': position,
-            #     'score': score,
-            # }
-            # for inning, position, score in zip(
-            #     [default_enter_inning] * NUMBER_PLAYERS_PER_INNING,
-            #     range(1, NUMBER_PLAYERS_PER_INNING + 1),
-            #     # To make sure none is preselected: it is better than the first player in the DB is always preselected
-            #     [None] * NUMBER_PLAYERS_PER_INNING
-            # )
-        ]
-        cell_formset_list = []
-        for team_line_up in line_up_elements_for_team:
-            # TODO: cell_formset returns always 30 elements (which are all the existing cells in the DB)
-            cell_formset = CellFormSet(initial=initial,
-                                       form_kwargs={'team_id': team_id, 'player': team_line_up.player.pass_number})
-            breakpoint()
-            cell_formset_list.append(cell_formset)
-        """
-        for form in formset:
-            form.fields['score'].initial = line_up_elements[0]
-            #form.fields['inning'].initial = default_enter_inning
-            form.save(commit=False)
-        """
+        cell_formset_list = get_cells_by_player(CellFormSet, line_up_ids, team_id)
 
-    team_to_show = get_object_or_404(Team, pk=team_id)
     if game.home_team.id == team_id:
         other_team_id = game.guest_team.id
         which_team = 'Home'
@@ -189,13 +153,28 @@ def update_sheet(request, game_id, team_id):
         other_team_id = game.home_team.id
         which_team = 'Guest'
 
-
-
     context = {
-        'team_name': team_to_show.team_name,
+        'team_name': team.team_name,
         'game_id': game_id,
         'other_team_id': other_team_id,
         'which_team': which_team,
-        'line_up': cell_formset_list
+        'line_up': cell_formset_list,
     }
     return render(request, "sheet.html", context)
+
+
+def get_cells_by_player(CellFormSet, line_up_ids, team_id):
+    cell_formset_list = []
+    for line_up_id in line_up_ids:
+        cell_formset = CellFormSet(
+            queryset=Cell.objects.filter(
+                score=line_up_id
+            ),
+            form_kwargs={
+                'team_id': team_id,
+                # not sure if needed anymore:
+                # 'player': team_line_up.player.pass_number
+            }
+        )
+        cell_formset_list.append(cell_formset)
+    return cell_formset_list
