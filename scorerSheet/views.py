@@ -123,8 +123,6 @@ def update_sheet(request, game_id, team_id):
         Cell,
         CellForm,
         extra=0,
-        min_num=NUMBER_PLAYERS_PER_INNING,
-        max_num=1*NUMBER_PLAYERS_PER_INNING
     )
 
     if request.method == 'POST':
