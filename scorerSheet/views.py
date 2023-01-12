@@ -130,16 +130,10 @@ def update_sheet(request, game_id, team_id):
     if request.method == 'POST':
         cell_formset = CellFormSet(
             request.POST,
-            # not sure if needed here yet:
-            # queryset=Cell.objects.filter(
-            #    score__in=line_up_ids
-            # ),
             form_kwargs={
                 'team_id': team_id,
-                #'player': team_line_up.player.pass_number
             }
         )
-        # TODO: not yet tested
         if cell_formset.is_valid():
             cell_formset.save()
 
@@ -150,8 +144,6 @@ def update_sheet(request, game_id, team_id):
             ),
             form_kwargs={
                 'team_id': team_id,
-                # not sure if needed anymore:
-                #'player': team_line_up.player.pass_number
             }
         )
 
