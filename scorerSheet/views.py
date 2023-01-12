@@ -125,30 +125,26 @@ def update_sheet(request, game_id, team_id):
         extra=0,
     )
 
-    cell_formset_list = []
-
     if request.method == 'POST':
-        aux = []
+        cell_formset_list = []
         for line_up_id in line_up_ids:
             cell_formset = CellFormSet(
                 request.POST,
                 # not sure if needed here yet:
                 # queryset=Cell.objects.filter(
-                #    score__in=line_up_ids
+                #    score=line_up_ids
                 # ),
                 form_kwargs={
                     'team_id': team_id,
-                    'player': line_up_id
-                }
+                    # 'player': line_up_id
+                },
+                prefix=line_up_id
             )
-            aux.append(cell_formset)
+            cell_formset_list.append(cell_formset)
         # TODO: not yet tested
-        breakpoint()
-        # if cell_formset.is_valid():
-        #     cell_formset.save()
-        # else:
-        #     for cell_form in cell_formset.forms:
-        #         print(cell_form.is_valid())
+        for cell_formset in cell_formset_list:
+            if cell_formset.is_valid():
+                cell_formset.save()
 
     cell_formset_list = get_cells_by_player(CellFormSet, line_up_ids, team_id)
 
@@ -180,7 +176,8 @@ def get_cells_by_player(CellFormSet, line_up_ids, team_id):
                 'team_id': team_id,
                 # not sure if needed anymore:
                 # 'player': team_line_up.player.pass_number
-            }
+            },
+            prefix=line_up_id,
         )
         cell_formset_list.append(cell_formset)
     return cell_formset_list
