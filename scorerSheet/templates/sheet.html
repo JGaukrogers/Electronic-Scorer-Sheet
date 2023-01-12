@@ -13,15 +13,21 @@
             <tr>
                 <td>Player</td>
                 <td>Batting pos.</td>
-
+                {% for line_up_element in formset.0 %}
+                    <td>{{line_up_element.inning.value}}</td>
+                {% endfor %}
             </tr>
+            {% for line_up_element_set in formset %}
             <tr>
-            {% for line_up_element_set in line_up %}
-                <td>
-                {{line_up_element_set}}
-                </td>
-            {% endfor %}
+                {% for line_up_element in line_up_element_set %}
+                    {% if line_up_element == line_up_element_set.0%}
+                    <td>{{line_up_element.score}}</td>
+                    <td>{{line_up_element.position.value}}</td>
+                    {% endif %}
+                <td>{{line_up_element.game_moves}}</td>
+                {% endfor %}
             </tr>
+            {% endfor %}
         </table>
         <br>
         <input name="submit" type="submit" value="Submit">
