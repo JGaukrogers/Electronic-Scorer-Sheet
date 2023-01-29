@@ -164,7 +164,6 @@ def update_sheet(request, game_id, team_id):
         'game_id': game_id,
         'other_team_id': other_team_id,
         'which_team': which_team,
-        # 'formset': cell_formset,
         'formset_list': cell_formset_list,
     }
     return render(request, "sheet.html", context)
