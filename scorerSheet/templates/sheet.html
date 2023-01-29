@@ -13,8 +13,13 @@
             {% for formset in formset_list %}
             {{ formset.management_form }}
             <tr>
-                {% for form in formset %}
-                <td>{{form.game_moves}}</td>
+                {% for cell in formset %}
+
+                {% if cell == formset.0 %}
+                <td>{{cell.score.value}}</td>
+                {% endif %}
+
+                <td>{{cell.game_moves}}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
