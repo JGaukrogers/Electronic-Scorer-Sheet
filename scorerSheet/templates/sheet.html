@@ -19,7 +19,13 @@
                 <td>{{cell.score.value}}</td>
                 {% endif %}
 
-                <td>{{cell.game_moves}}</td>
+                <td>
+                    {{cell.id.as_hidden}}
+                    {{cell.score.as_hidden}}
+                    {{cell.inning.as_hidden}}
+                    {{cell.position.as_hidden}}
+                    {{cell.game_moves}}
+                </td>
                 {% endfor %}
             </tr>
             {% endfor %}

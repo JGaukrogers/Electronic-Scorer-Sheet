@@ -126,7 +126,6 @@ def update_sheet(request, game_id, team_id):
     )
 
     cell_formset_list = []
-
     if request.method == 'POST':
         for line_up_id in line_up_ids:
             cell_formset = CellFormSet(
@@ -137,10 +136,8 @@ def update_sheet(request, game_id, team_id):
                 prefix=line_up_id
             )
             cell_formset_list.append(cell_formset)
-        breakpoint()
-        # if cell_formset.is_valid():
-        #     cell_formset.save()
-
+            if cell_formset.is_valid():
+                cell_formset.save()
     else:
 
         for line_up_id in line_up_ids:
