@@ -128,6 +128,7 @@ def update_sheet(request, game_id, team_id):
     cell_formset_list = dict()
     if request.method == 'POST':
         for line_up_id in line_up_ids:
+            line_up = LineUp.objects.get(pk=line_up_id)
             cell_formset = CellFormSet(
                 request.POST,
                 form_kwargs={
@@ -135,7 +136,7 @@ def update_sheet(request, game_id, team_id):
                 },
                 prefix=line_up_id
             )
-            cell_formset_list.append(cell_formset)
+            cell_formset_list[line_up] = cell_formset
             if cell_formset.is_valid():
                 cell_formset.save()
     else:
