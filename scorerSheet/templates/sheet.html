@@ -8,15 +8,21 @@
     <form method="POST">
         {% csrf_token %}
 
-
         <table>
-            {% for formset in formset_list %}
+            <tr>
+                <td>Name</td>
+                <td>Pos</td>
+                <td>in</td>
+            </tr>
+            {% for line_up, formset in formset_list.items %}
             {{ formset.management_form }}
             <tr>
                 {% for cell in formset %}
 
                 {% if cell == formset.0 %}
-                <td>{{cell.score.value}}</td>
+                    <td>{{line_up.player}}</td>
+                    <td>{{line_up.defensive_position}}</td>
+                    <td>{{line_up.enter_inning}}</td>
                 {% endif %}
 
                 <td>
@@ -30,6 +36,7 @@
             </tr>
             {% endfor %}
         </table>
+
         <br>
         <input name="submit" type="submit" value="Submit">
     </form>
@@ -41,6 +48,10 @@
     </button>
 </div>
 
-{{line_up_elements_for_team}}
+<div>
+    <button type="button">
+        <a href="{% url 'add_player' game_id team_id %}">Add player</a>
+    </button>
+</div>
 
 {% endblock %}

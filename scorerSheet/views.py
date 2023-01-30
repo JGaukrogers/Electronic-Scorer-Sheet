@@ -88,7 +88,7 @@ def create_cells_for_lineup(lineup: LineUp):
         inning_list.append(Inning.objects.get_or_create(inning=i)[0])
 
     for i in range(0, NUMBER_INITIAL_INNINGS):
-        cell = Cell(inning = inning_list[i], score=lineup, position = lineup.defensive_position)
+        cell = Cell(inning=inning_list[i], score=lineup, position=lineup.defensive_position)
         cell.save()
 
 
@@ -125,7 +125,7 @@ def update_sheet(request, game_id, team_id):
         extra=0,
     )
 
-    cell_formset_list = []
+    cell_formset_list = dict()
     if request.method == 'POST':
         for line_up_id in line_up_ids:
             cell_formset = CellFormSet(
@@ -141,6 +141,7 @@ def update_sheet(request, game_id, team_id):
     else:
 
         for line_up_id in line_up_ids:
+            line_up = LineUp.objects.get(pk=line_up_id)
             cell_formset = CellFormSet(
                 queryset=Cell.objects.filter(
                     score=line_up_id
@@ -150,7 +151,7 @@ def update_sheet(request, game_id, team_id):
                 },
                 prefix=line_up_id
             )
-            cell_formset_list.append(cell_formset)
+            cell_formset_list[line_up] = cell_formset
 
     if game.home_team.id == team_id:
         other_team_id = game.guest_team.id
@@ -163,6 +164,7 @@ def update_sheet(request, game_id, team_id):
         'team_name': team.team_name,
         'game_id': game_id,
         'other_team_id': other_team_id,
+        'team_id': team_id,
         'which_team': which_team,
         'formset_list': cell_formset_list,
     }
