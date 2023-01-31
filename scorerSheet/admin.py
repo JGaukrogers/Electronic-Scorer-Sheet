@@ -10,7 +10,7 @@ class InningAdmin(admin.ModelAdmin):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ['club_number', 'team_name', 'location']
+    list_display = ['id', 'club_number', 'team_name', 'location']
 
 
 @admin.register(Player)
@@ -20,12 +20,12 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ['year', 'game_number', 'location']
+    list_display = ['id', 'year', 'game_number', 'location']
 
 
 @admin.register(Cell)
 class CellAdmin(admin.ModelAdmin):
-    list_display = ['timestamp', 'inning', 'game_moves', 'score']
+    list_display = ['timestamp', 'inning', 'score', 'position', 'game_moves']
 
 
 @admin.register(LineUp)

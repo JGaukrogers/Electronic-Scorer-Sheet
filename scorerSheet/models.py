@@ -61,6 +61,15 @@ class LineUp(models.Model):
             f'(entered: {self.enter_inning} exited: {self.exit_inning})'
         )
 
+    def __iter__(self):
+        return iter([self.game,
+                 self.player,
+                 self.defensive_position,
+                 self.enter_inning,
+                 self.exit_inning,
+                     ])
+
+
 
 class Cell(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)

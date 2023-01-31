@@ -10,16 +10,23 @@
     <form action="" method="post">
         {% csrf_token %}
         <h1>Add players for team {{team_name}}</h1>
-        <p>
-            Player's Name - Defensive position - Enter Inning
-        </p>
-        {{ home_team_formset.management_form }}
-        {% for form in home_team_formset.forms %}
-        <p>
-        {{form.id}}{{ form.player }} {{ form.defensive_position }}
-        {{form.enter_inning}} {{form.exit_inning}}
-        </p>
+        <table>
+            <tr>
+                <td></td>
+                <td>Player's Name</td>
+                <td>Defensive position</td>
+                <td>Enter Inning</td>
+            </tr>
+        {{ team_formset.management_form }}
+        {% for form in team_formset.forms %}
+            <tr>
+                <td>{{form.id}}</td>
+                <td>{{form.player}}</td>
+                <td>{{form.defensive_position}}</td>
+                <td>{{form.enter_inning}}</td>
+            </tr>
         {% endfor %}
+        </table>
         <input type="submit" value="Subit Team">
     </form>
 </div>

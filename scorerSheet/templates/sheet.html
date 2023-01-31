@@ -1,21 +1,57 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Hello Scorer</h1>
+<h1>{{which_team}}: {{team_name}}</h1>
 
 
 <div>
     <form method="POST">
         {% csrf_token %}
-        {{ formset.management_form }}
-        {% for form in formset.forms %}
-        <ul>
-            {{ form.as_ul }}
-        </ul>
-        {% endfor %}
+
+        <table>
+            <tr>
+                <td>Name</td>
+                <td>Pos</td>
+                <td>in</td>
+            </tr>
+            {% for line_up, formset in formset_list.items %}
+            {{ formset.management_form }}
+            <tr>
+                {% for cell in formset %}
+
+                {% if cell == formset.0 %}
+                    <td>{{line_up.player}}</td>
+                    <td>{{line_up.defensive_position}}</td>
+                    <td>{{line_up.enter_inning}}</td>
+                {% endif %}
+
+                <td>
+                    {{cell.id.as_hidden}}
+                    {{cell.score.as_hidden}}
+                    {{cell.inning.as_hidden}}
+                    {{cell.position.as_hidden}}
+                    {{cell.game_moves}}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
         <br>
         <input name="submit" type="submit" value="Submit">
     </form>
+</div>
+<br/>
+<div>
+    <button type="button">
+        <a href="{% url 'update_sheet' game_id other_team_id %}">Switch Score Sheet</a>
+    </button>
+</div>
+
+<div>
+    <button type="button">
+        <a href="{% url 'add_player' game_id team_id %}">Add player</a>
+    </button>
 </div>
 
 {% endblock %}

@@ -19,7 +19,19 @@ class GameForm(ModelForm):
 class CellForm(ModelForm):
     class Meta:
         model = Cell
-        fields = '__all__'
+        fields = '__all__'  # inning, score, position, game_moves
+
+    def __init__(self, *args, **kwargs):
+        team_id = kwargs.pop('team_id')
+        player_pass_nr = None
+        if 'player' in kwargs:
+            player_pass_nr = kwargs.pop('player')
+        super().__init__(*args, **kwargs)
+        if player_pass_nr:
+            self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id,
+                                                                  player__pass_number=player_pass_nr)
+        else:
+            self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id)
 
 
 class PlayerForm(ModelForm):
@@ -42,4 +54,4 @@ class LineUpForm(ModelForm):
     def __init__(self, *args, **kwargs):
         team_id = kwargs.pop('team_id')
         super().__init__(*args, **kwargs)
-        self.fields['player'].queryset = Player.objects.filter(team__club_number=team_id)
+        self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
