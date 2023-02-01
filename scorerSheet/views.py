@@ -42,13 +42,27 @@ def create_lineup(request, game_id, team_id):
                                        form_kwargs={'team_id': team_id},
                                        # initial=[{'enter_inning': default_enter_inning}],
                                        )
-        valid_form_found = False
+
+        # manually check for errors
+        players_entered = list()
+        error_detected = False
         for form in lineup_formset:
-            # https://stackoverflow.com/a/29899919
             if form.is_valid() and form.has_changed():
-                new_lineup = save_new_lineup_element(form, game)
-                create_cells_for_lineup(new_lineup)
-                valid_form_found = True
+                if form.cleaned_data['player'] in players_entered:
+                    messages.error(request, 'Repeated players detected')
+                    error_detected = True
+                    break
+                else:
+                    players_entered.append(form.cleaned_data['player'])
+
+        valid_form_found = False
+        if not error_detected:
+            for form in lineup_formset:
+                # https://stackoverflow.com/a/29899919
+                if form.is_valid() and form.has_changed():
+                        new_lineup = save_new_lineup_element(form, game)
+                        create_cells_for_lineup(new_lineup)
+                        valid_form_found = True
 
         if valid_form_found:
             if game.guest_team.id != team_id:
