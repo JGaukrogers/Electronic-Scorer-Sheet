@@ -100,8 +100,8 @@ def add_player(request, game_id, team_id):
             player = form.save(commit=False)
             player.team = team
             player.save()
-    data = {'team': team}
-    form = PlayerForm(data)
+    form = PlayerForm()
+    form.fields['team'].initial = team
     context = {'form': form, 'game_id': game_id, 'team_id': team_id}
     return render(request, 'add_player.html', context)
 
