@@ -5,7 +5,7 @@ from scorerSheet.models import Inning, Team, Player, Game, Cell, LineUp
 
 @admin.register(Inning)
 class InningAdmin(admin.ModelAdmin):
-    list_display = ['inning']
+    list_display = ['id', 'inning']
 
 
 @admin.register(Team)

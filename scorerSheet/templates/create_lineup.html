@@ -15,7 +15,7 @@
                 <td></td>
                 <td>Player's Name</td>
                 <td>Defensive position</td>
-                <td>Enter Inning</td>
+                <td><!-- Enter inning --></td>
             </tr>
         {{ team_formset.management_form }}
         {% for form in team_formset.forms %}
@@ -23,7 +23,7 @@
                 <td>{{form.id}}</td>
                 <td>{{form.player}}</td>
                 <td>{{form.defensive_position}}</td>
-                <td>{{form.enter_inning}}</td>
+                <td>{{form.enter_inning.as_hidden}}</td>
             </tr>
         {% endfor %}
         </table>
