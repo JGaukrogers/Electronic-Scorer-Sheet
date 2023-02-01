@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -33,7 +34,7 @@ def create_team(request):
 def create_lineup(request, game_id, team_id):
     LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
                                          # can_order=True,
-                                         min_num=2, max_num=3)
+                                         min_num=2, max_num=2, absolute_max=2)
     game = get_object_or_404(Game, pk=game_id)
     default_enter_inning = Inning.objects.get_or_create(inning=1)
     if request.method == 'POST':
@@ -99,7 +100,10 @@ def add_player(request, game_id, team_id):
         if form.is_valid():
             player = form.save(commit=False)
             player.team = team
+            messages.success(request, 'Player added successfully')
             player.save()
+        else:
+            messages.error(request, form.errors)
     form = PlayerForm()
     form.fields['team'].initial = team
     context = {'form': form, 'game_id': game_id, 'team_id': team_id}
