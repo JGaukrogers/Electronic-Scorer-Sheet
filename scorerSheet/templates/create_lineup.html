@@ -1,14 +1,6 @@
 {% extends "base.html" %}
 
-{# Load the tag library #}
 {% load bootstrap5 %}
-
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
 
 {% block content %}
 <div>
@@ -20,7 +12,6 @@
     <form action="" method="post">
         {% csrf_token %}
         <h1>Add players for team {{team_name}}</h1>
-        {% include 'messages.html' %}
         <table>
             <tr>
                 <td></td>
