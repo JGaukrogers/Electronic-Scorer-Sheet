@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% load bootstrap5 %}
 
 {% block content %}
@@ -12,9 +11,10 @@
     <form action="" method="post">
         {% csrf_token %}
         <h1>Add players for team {{team_name}}</h1>
+        {% bootstrap_formset_errors team_formset %}
         <table>
             <tr>
-                <td></td>
+                <td><!-- id --></td>
                 <td>Player's Name</td>
                 <td>Defensive position</td>
                 <td><!-- Enter inning --></td>
@@ -22,9 +22,9 @@
         {{ team_formset.management_form }}
         {% for form in team_formset.forms %}
             <tr>
-                <td>{{form.id}}</td>
-                <td>{{form.player}}</td>
-                <td>{{form.defensive_position}}</td>
+                <td>{{form.id.as_hidden}}</td>
+                <td>{% bootstrap_field form.player show_label=False %}</td>
+                <td>{% bootstrap_field form.defensive_position show_label=False %}</td>
                 <td>{{form.enter_inning.as_hidden}}</td>
             </tr>
         {% endfor %}

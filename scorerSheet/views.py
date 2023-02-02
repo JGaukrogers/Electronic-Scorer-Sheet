@@ -61,13 +61,16 @@ def create_lineup(request, game_id, team_id):
             valid_form_found = True
             lineup_formset.save()
         else:
-            if not error_detected:
-                for form in lineup_formset:
-                    # https://stackoverflow.com/a/29899919
-                    if form.is_valid() and form.has_changed():
-                            new_lineup = save_new_lineup_element(form, game)
-                            create_cells_for_lineup(new_lineup)
-                            valid_form_found = True
+            print(lineup_formset.errors)
+
+        # else:
+        #     if not error_detected:
+        #         for form in lineup_formset:
+        #             # https://stackoverflow.com/a/29899919
+        #             if form.is_valid() and form.has_changed():
+        #                     new_lineup = save_new_lineup_element(form, game)
+        #                     create_cells_for_lineup(new_lineup)
+        #                     valid_form_found = True
 
         if valid_form_found:
             if game.guest_team.id != team_id:
