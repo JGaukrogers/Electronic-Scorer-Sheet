@@ -3,6 +3,7 @@ from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
+from scorerSheet.formsets import CustomLineUpFormSet
 from scorerSheet.models import Cell, Game, Team, LineUp, Inning
 
 NUMBER_INITIAL_INNINGS = 5
@@ -32,7 +33,7 @@ def create_team(request):
 
 
 def create_lineup(request, game_id, team_id):
-    LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
+    LineUpFormSet = modelformset_factory(LineUp, LineUpForm, formset=CustomLineUpFormSet,
                                          # can_order=True,
                                          min_num=4, max_num=4, absolute_max=10)
     game = get_object_or_404(Game, pk=game_id)
@@ -46,23 +47,27 @@ def create_lineup(request, game_id, team_id):
         # manually check for errors
         players_entered = list()
         error_detected = False
-        for form in lineup_formset:
-            if form.is_valid() and form.has_changed():
-                if form.cleaned_data['player'] in players_entered:
-                    messages.error(request, 'Repeated players detected')
-                    error_detected = True
-                    break
-                else:
-                    players_entered.append(form.cleaned_data['player'])
+        # for form in lineup_formset:
+        #     if form.is_valid() and form.has_changed():
+        #         if form.cleaned_data['player'] in players_entered:
+        #             messages.error(request, 'Repeated players detected')
+        #             error_detected = True
+        #             break
+        #         else:
+        #             players_entered.append(form.cleaned_data['player'])
 
         valid_form_found = False
-        if not error_detected:
-            for form in lineup_formset:
-                # https://stackoverflow.com/a/29899919
-                if form.is_valid() and form.has_changed():
-                        new_lineup = save_new_lineup_element(form, game)
-                        create_cells_for_lineup(new_lineup)
-                        valid_form_found = True
+        if lineup_formset.is_valid():
+            valid_form_found = True
+            lineup_formset.save()
+        else:
+            if not error_detected:
+                for form in lineup_formset:
+                    # https://stackoverflow.com/a/29899919
+                    if form.is_valid() and form.has_changed():
+                            new_lineup = save_new_lineup_element(form, game)
+                            create_cells_for_lineup(new_lineup)
+                            valid_form_found = True
 
         if valid_form_found:
             if game.guest_team.id != team_id:
