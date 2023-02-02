@@ -1,18 +1,26 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
 
 {% block content %}
-<h1>Add a new player</h1>
+<h1>Add a new player for {{form.team.initial}}</h1>
 <div>
-    <form action="" method="post">
+    <form action="" class="post-form" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Add player">
+        {% bootstrap_form form %}
+
+        {% buttons %}
+        <button type="submit" class="btn btn-primary">
+            Add player
+        </button>
+        {% endbuttons %}
     </form>
 </div>
 <div>
+    {% buttons %}
     <button type="button">
         <a href="{% url 'create_lineup' game_id team_id %}">Get back</a>
     </button>
+    {% endbuttons %}
 </div>
 
 {% endblock %}
