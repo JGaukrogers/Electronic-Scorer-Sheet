@@ -47,14 +47,14 @@ def create_lineup(request, game_id, team_id):
         # manually check for errors
         players_entered = list()
         error_detected = False
-        # for form in lineup_formset:
-        #     if form.is_valid() and form.has_changed():
-        #         if form.cleaned_data['player'] in players_entered:
-        #             messages.error(request, 'Repeated players detected')
-        #             error_detected = True
-        #             break
-        #         else:
-        #             players_entered.append(form.cleaned_data['player'])
+        for form in lineup_formset:
+            if form.is_valid() and form.has_changed():
+                if form.cleaned_data['player'] in players_entered:
+                    messages.error(request, 'Repeated players detected')
+                    error_detected = True
+                    break
+                else:
+                    players_entered.append(form.cleaned_data['player'])
 
         valid_form_found = False
         if lineup_formset.is_valid():
