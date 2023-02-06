@@ -35,6 +35,7 @@ def create_team(request):
 def create_lineup(request, game_id, team_id):
     LineUpFormSet = modelformset_factory(LineUp, LineUpForm, formset=CustomLineUpFormSet,
                                          # can_order=True,
+                                         # min_num + 1 -> # forms displayed
                                          min_num=1, max_num=4, absolute_max=10)
     game = get_object_or_404(Game, pk=game_id)
     default_enter_inning, _ = Inning.objects.get_or_create(inning=1)
