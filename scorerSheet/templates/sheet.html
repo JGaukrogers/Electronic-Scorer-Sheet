@@ -30,7 +30,7 @@
                     {{cell.score.as_hidden}}
                     {{cell.inning.as_hidden}}
                     {{cell.position.as_hidden}}
-                    {{cell.game_move_H_1}}
+                    {% include 'cell.html' %}
                 </td>
                 {% endfor %}
             </tr>
