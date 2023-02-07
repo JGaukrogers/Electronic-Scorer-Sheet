@@ -82,7 +82,10 @@ class Cell(models.Model):
     position = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(9)]
     )
-    game_moves = models.CharField(max_length=50, null=True, blank=True)
+    game_move_H_1 = models.CharField(max_length=50, null=True, blank=True)
+    game_move_1_2 = models.CharField(max_length=50, null=True, blank=True)
+    game_move_2_3 = models.CharField(max_length=50, null=True, blank=True)
+    game_move_3_H = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return f'Inning {self.inning} player {self.score}'
