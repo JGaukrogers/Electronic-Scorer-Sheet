@@ -7,8 +7,8 @@ class CustomLineUpFormSet(BaseFormSet):
     def clean(self):
         super().clean()
 
-        players_entered = list()
-        occupied_positions = list()
+        players_entered = set()
+        occupied_positions = set()
         for form in self.forms:
 
             # lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
@@ -21,5 +21,5 @@ class CustomLineUpFormSet(BaseFormSet):
                 elif form.cleaned_data['defensive_position'] in occupied_positions:
                     raise ValidationError('Repeated position detected')
                 else:
-                    players_entered.append(form.cleaned_data['player'])
-                    occupied_positions.append(form.cleaned_data['defensive_position'])
+                    players_entered.add(form.cleaned_data['player'])
+                    occupied_positions.add(form.cleaned_data['defensive_position'])
