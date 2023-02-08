@@ -3,6 +3,7 @@ from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
+from scorerSheet.formsets import CustomLineUpFormSet
 from scorerSheet.models import Cell, Game, Team, LineUp, Inning
 
 NUMBER_INITIAL_INNINGS = 5
@@ -32,15 +33,19 @@ def create_team(request):
 
 
 def create_lineup(request, game_id, team_id):
-    LineUpFormSet = modelformset_factory(LineUp, LineUpForm,
+    LineUpFormSet = modelformset_factory(LineUp, LineUpForm, formset=CustomLineUpFormSet,
                                          # can_order=True,
-                                         min_num=2, max_num=2, absolute_max=2)
+                                         # min_num + 1 -> # forms displayed
+                                         min_num=1, max_num=4, absolute_max=10)
     game = get_object_or_404(Game, pk=game_id)
-    default_enter_inning = Inning.objects.get_or_create(inning=1)
+    default_enter_inning, _ = Inning.objects.get_or_create(inning=1)
     if request.method == 'POST':
         lineup_formset = LineUpFormSet(request.POST,
                                        form_kwargs={'team_id': team_id},
-                                       initial=[{'enter_inning': default_enter_inning}])
+                                       # initial=[{'enter_inning': default_enter_inning}],
+                                       )
+
+        valid_form_found = False
         if lineup_formset.is_valid():
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
@@ -48,6 +53,13 @@ def create_lineup(request, game_id, team_id):
                     new_lineup = save_new_lineup_element(form, game)
                     create_cells_for_lineup(new_lineup)
 
+            valid_form_found = True
+        else:
+            # Ggf Add other errors
+            messages.error(request, lineup_formset.non_form_errors())
+            messages.error(request, lineup_formset.errors)
+
+        if valid_form_found:
             if game.guest_team.id != team_id:
                 team_id = game.guest_team.id
                 return redirect('create_lineup', game_id, team_id)
@@ -55,8 +67,8 @@ def create_lineup(request, game_id, team_id):
                 return redirect('update_sheet', game_id, game.home_team.id)
 
     lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
-    for lineup in lineup_formset:
-        lineup.fields['enter_inning'].initial = default_enter_inning
+    # for lineup in lineup_formset:
+    #     lineup.fields['enter_inning'].initial = default_enter_inning
     if game.home_team.id == team_id:
         team_name = game.home_team.team_name
     else:
