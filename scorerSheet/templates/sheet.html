@@ -10,30 +10,33 @@
 
         <table>
             <tr>
-                <td>Name</td>
-                <td>Pos</td>
-                <td>in</td>
+                <th>Name</th>
+                <th>Pos</th>
+                <th>in</th>
+                {% for cell in inning_cells %}
+                  <th class="text-center">{{cell.inning.value}}</th>
+                {% endfor %}
             </tr>
             {% for line_up, formset in formset_list.items %}
-            {{ formset.management_form }}
-            <tr>
+              {{ formset.management_form }}
+              <tr>
                 {% for cell in formset %}
 
-                {% if cell == formset.0 %}
-                    <td>{{line_up.player}}</td>
-                    <td>{{line_up.defensive_position}}</td>
-                    <td>{{line_up.enter_inning}}</td>
-                {% endif %}
+                  {% if cell == formset.0 %}
+                      <td>{{line_up.player}}</td>
+                      <td>{{line_up.defensive_position}}</td>
+                      <td>{{line_up.enter_inning}}</td>
+                  {% endif %}
 
-                <td>
+                  <td>
                     {{cell.id.as_hidden}}
                     {{cell.score.as_hidden}}
                     {{cell.inning.as_hidden}}
                     {{cell.position.as_hidden}}
                     {% include 'cell.html' %}
-                </td>
+                  </td>
                 {% endfor %}
-            </tr>
+              </tr>
             {% endfor %}
         </table>
 

@@ -177,5 +177,6 @@ def update_sheet(request, game_id, team_id):
         'team_id': team_id,
         'which_team': which_team,
         'formset_list': cell_formset_list,
+        'inning_cells': list(cell_formset_list.values())[0],
     }
     return render(request, "sheet.html", context)
