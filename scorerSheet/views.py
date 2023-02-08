@@ -45,7 +45,6 @@ def create_lineup(request, game_id, team_id):
                                        # initial=[{'enter_inning': default_enter_inning}],
                                        )
 
-        valid_form_found = False
         if lineup_formset.is_valid():
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
@@ -53,29 +52,23 @@ def create_lineup(request, game_id, team_id):
                     new_lineup = save_new_lineup_element(form, game)
                     create_cells_for_lineup(new_lineup)
 
-            valid_form_found = True
-        else:
-            # Ggf Add other errors
-            messages.error(request, lineup_formset.non_form_errors())
-            messages.error(request, lineup_formset.errors)
-
-        if valid_form_found:
             if game.guest_team.id != team_id:
                 team_id = game.guest_team.id
                 return redirect('create_lineup', game_id, team_id)
             else:
                 return redirect('update_sheet', game_id, game.home_team.id)
 
-    lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
-    # for lineup in lineup_formset:
-    #     lineup.fields['enter_inning'].initial = default_enter_inning
+    else:
+        # upon GET make a new one
+        lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
+
     if game.home_team.id == team_id:
         team_name = game.home_team.team_name
     else:
         team_name = game.guest_team.team_name
 
     context = {
-        'team_formset': lineup_formset, #TODO: change name of home_team_formset
+        'team_formset': lineup_formset, # TODO: change name of home_team_formset
         'team_name': team_name,
         'game_id': game_id,
         'team_id': team_id,
