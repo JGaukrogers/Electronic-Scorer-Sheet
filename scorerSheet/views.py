@@ -10,6 +10,13 @@ NUMBER_INITIAL_INNINGS = 5
 NUMBER_PLAYERS_PER_INNING = 9
 
 
+def home(request):
+    games = Game.objects.select_related(
+        "home_team", "guest_team"
+    ).all()
+    return render(request, 'home.html', {'games': games})
+
+
 def new_game(request):
     if request.method == 'POST':
         form = GameForm(request.POST)
@@ -60,7 +67,10 @@ def create_lineup(request, game_id, team_id):
 
     else:
         # upon GET make a new one
-        lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
+        lineup_formset = LineUpFormSet(
+            form_kwargs={'team_id': team_id}
+        )
+
 
     if game.home_team.id == team_id:
         team_name = game.home_team.team_name
@@ -148,6 +158,7 @@ def update_sheet(request, game_id, team_id):
             cell_formset_list[line_up] = cell_formset
             if cell_formset.is_valid():
                 cell_formset.save()
+        messages.success(request, 'Sheet updated')
     else:
 
         for line_up_id in line_up_ids:
@@ -162,6 +173,10 @@ def update_sheet(request, game_id, team_id):
                 prefix=line_up_id
             )
             cell_formset_list[line_up] = cell_formset
+
+    if not cell_formset_list:
+       messages.warning(request, "Need to create lineup first")
+       return redirect('create_lineup', game.id, game.home_team.id)
 
     if game.home_team.id == team_id:
         other_team_id = game.guest_team.id

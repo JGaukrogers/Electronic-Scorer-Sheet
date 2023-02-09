@@ -26,7 +26,7 @@
                 <td>{{form.id.as_hidden}}</td>
                 <td>{% bootstrap_field form.player show_label=False %}</td>
                 <td>{% bootstrap_field form.defensive_position show_label=False %}</td>
-                <td>{{form.enter_inning}}</td>
+                <td>{% bootstrap_field form.enter_inning show_label=False %}</td>
             </tr>
         {% endfor %}
         </table>
