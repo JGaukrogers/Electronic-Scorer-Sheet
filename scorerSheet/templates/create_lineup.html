@@ -18,8 +18,9 @@
                 <td>Defensive position</td>
                 <td><!-- Enter inning --></td>
             </tr>
+
         {{ team_formset.management_form }}
-            {{ formset.non_form_errors }}
+
         {% for form in team_formset.forms %}
             <tr>
                 <td>{{form.id.as_hidden}}</td>
