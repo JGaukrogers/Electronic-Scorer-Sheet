@@ -10,11 +10,11 @@ NUMBER_INITIAL_INNINGS = 5
 NUMBER_PLAYERS_PER_INNING = 9
 
 
-def home(request):
+def game_board(request):
     games = Game.objects.select_related(
         "home_team", "guest_team"
     ).all()
-    return render(request, 'home.html', {'games': games})
+    return render(request, 'game_board.html', {'games': games})
 
 
 def new_game(request):
