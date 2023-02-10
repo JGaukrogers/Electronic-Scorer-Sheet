@@ -14,7 +14,7 @@
         <table>
             <tr>
                 <td><!-- id --></td>
-                <td><!-- No. (TrikotNr) --></td>
+                <td>Jersey Number</td>
                 <td>Player's Name</td>
                 <td><!-- Player's Pass --></td>
                 <td>Defensive position</td>
@@ -26,7 +26,7 @@
         {% for form in team_formset.forms %}
             <tr>
                 <td>{{form.id.as_hidden}}</td>
-                <td></td>
+                <td>{% bootstrap_field form.jersey_number show_label=False %}</td>
                 <td>{% bootstrap_field form.player show_label=False %}</td>
                 <td></td>
                 <td>{% bootstrap_field form.defensive_position show_label=False %}</td>

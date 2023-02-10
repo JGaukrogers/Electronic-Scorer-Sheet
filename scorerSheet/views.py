@@ -71,7 +71,6 @@ def create_lineup(request, game_id, team_id):
             form_kwargs={'team_id': team_id}
         )
 
-
     if game.home_team.id == team_id:
         team_name = game.home_team.team_name
     else:
@@ -175,8 +174,8 @@ def update_sheet(request, game_id, team_id):
             cell_formset_list[line_up] = cell_formset
 
     if not cell_formset_list:
-       messages.warning(request, "Need to create lineup first")
-       return redirect('create_lineup', game.id, game.home_team.id)
+        messages.warning(request, "Need to create lineup first")
+        return redirect('create_lineup', game.id, game.home_team.id)
 
     if game.home_team.id == team_id:
         other_team_id = game.guest_team.id
