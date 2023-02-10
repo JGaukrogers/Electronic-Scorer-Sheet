@@ -22,4 +22,5 @@ urlpatterns = [
     path('user_admin/', include("django.contrib.auth.urls")),
     path('', include('scorerSheet.urls')),
     path('', TemplateView.as_view(template_name="home.html"), name="home"),
+    path('logout', TemplateView.as_view(template_name='registration/logout.html'), name='custom_logout'),
 ]
