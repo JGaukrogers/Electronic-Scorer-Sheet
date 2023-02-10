@@ -89,6 +89,7 @@ def save_new_lineup_element(form, game):
     # TODO - problem with this: you can't modify existing players, only create new ones
     new_lineup = LineUp()
     new_lineup.game = game
+    new_lineup.jersey_number = form.cleaned_data['jersey_number']
     new_lineup.player = form.cleaned_data['player']
     new_lineup.defensive_position = form.cleaned_data['defensive_position']
     new_lineup.enter_inning = form.cleaned_data['enter_inning']
