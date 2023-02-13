@@ -7,14 +7,7 @@ class CustomLineUpFormSet(BaseFormSet):
     def clean(self):
         super().clean()
 
-        jersey_numbers = [
-            form.cleaned_data['jersey_number'] for form in self.forms
-        ]
-        if jersey_numbers.count(None) > 1:
-            raise ValidationError('Multiple empty jersey numbers detected')
-
-        if len(set(jersey_numbers)) < len(jersey_numbers):
-            raise ValidationError('Repeated jersey numbers detected')
+        self.validate_jersey_number()
 
         players_entered = set()
         occupied_positions = set()
@@ -32,3 +25,12 @@ class CustomLineUpFormSet(BaseFormSet):
                 else:
                     players_entered.add(form.cleaned_data['player'])
                     occupied_positions.add(form.cleaned_data['defensive_position'])
+
+    def validate_jersey_number(self):
+        jersey_numbers = [
+            form.cleaned_data['jersey_number'] for form in self.forms
+        ]
+        if jersey_numbers.count(None) > 1:
+            raise ValidationError('Multiple empty jersey numbers detected')
+        if len(set(jersey_numbers)) < len(jersey_numbers):
+            raise ValidationError('Repeated jersey numbers detected')
