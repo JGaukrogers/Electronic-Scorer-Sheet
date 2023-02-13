@@ -1,4 +1,9 @@
-<h2>Logged out</h2>
-<form method="post">
-    To log in again, go to <a href="{% url 'login' %}">log in</a>.
-</form>
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block content %}
+  <h2>Logged out</h2>
+  <form method="post">
+      To log in again, go to <a href="{% url 'login' %}">log in</a>.
+  </form>
+{% endblock %}
