@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Year</th>
+      <th scope="col">Number</th>
+      <th scope="col">Location</th>
+      <th scope="col">Home team</th>
+      <th scope="col">Guest team</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for game in games %}
+      <tr>
+        <th scope="row">{{ game.year }}</th>
+        <td>{{ game.game_number}}</td>
+        <td>{{ game.location }}</td>
+        <td>
+          <a href="{% url "update_sheet" game_id=game.id team_id=game.home_team.id %}" target="_blank">{{ game.home_team.team_name }}</a>
+        </td>
+        <td>
+          <a href="{% url "update_sheet" game_id=game.id team_id=game.guest_team.id %}" target="_blank">{{ game.guest_team.team_name }}</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% buttons %}
+  <button type="button">
+    <a href="{% url 'new_game' %}">Create a new game</a>
+  </button>
+{% endbuttons %}
+
+{% endblock %}
