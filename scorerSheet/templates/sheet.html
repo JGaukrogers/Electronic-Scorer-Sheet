@@ -24,7 +24,11 @@
                 {% for cell in formset %}
 
                   {% if cell == formset.0 %}
-                      <td>{{line_up.jersey_number}}</td>
+                      {% if line_up.jersey_number is None %}
+                          <td></td>
+                      {% else %}
+                          <td>{{line_up.jersey_number}}</td>
+                      {% endif %}
                       <td>{{line_up.player}}</td>
                       <td>{{line_up.defensive_position}}</td>
                       <td>{{line_up.enter_inning}}</td>

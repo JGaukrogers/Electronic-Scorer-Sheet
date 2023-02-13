@@ -8,9 +8,8 @@ class CustomLineUpFormSet(BaseFormSet):
         super().clean()
 
         jersey_numbers = [
-            form.cleaned_data['jersey_number']  for form in self.forms
+            form.cleaned_data['jersey_number'] for form in self.forms
         ]
-        # this should go first
         if jersey_numbers.count(None) > 1:
             raise ValidationError('Multiple empty jersey numbers detected')
 
