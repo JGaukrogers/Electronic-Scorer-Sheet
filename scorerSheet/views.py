@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -10,13 +11,15 @@ NUMBER_INITIAL_INNINGS = 5
 NUMBER_PLAYERS_PER_INNING = 9
 
 
-def home(request):
+@login_required
+def game_board(request):
     games = Game.objects.select_related(
         "home_team", "guest_team"
     ).all()
-    return render(request, 'home.html', {'games': games})
+    return render(request, 'game_board.html', {'games': games})
 
 
+@login_required
 def new_game(request):
     if request.method == 'POST':
         form = GameForm(request.POST)
@@ -28,6 +31,7 @@ def new_game(request):
     return render(request, 'new_game.html', {'form': form})
 
 
+@login_required
 def create_team(request):
     if request.method == 'POST':
         form = TeamForm(request.POST)
@@ -39,6 +43,7 @@ def create_team(request):
     return render(request, 'create_team.html', {'form': form})
 
 
+@login_required
 def create_lineup(request, game_id, team_id):
     LineUpFormSet = modelformset_factory(LineUp, LineUpForm, formset=CustomLineUpFormSet,
                                          # can_order=True,
@@ -108,6 +113,7 @@ def create_cells_for_lineup(lineup: LineUp):
         cell.save()
 
 
+@login_required
 def add_player(request, game_id, team_id):
     team = get_object_or_404(Team, pk=team_id)
     if request.method == 'POST':
@@ -125,6 +131,7 @@ def add_player(request, game_id, team_id):
     return render(request, 'add_player.html', context)
 
 
+@login_required
 def update_sheet(request, game_id, team_id):
     game = get_object_or_404(Game, pk=game_id)
     team = get_object_or_404(Team, pk=team_id)
