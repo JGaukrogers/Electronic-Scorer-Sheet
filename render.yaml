@@ -1,0 +1,20 @@
+databases:
+  - name: ElectronicScorerSheet
+    databaseName: ElectronicScorerSheet
+    user: admin
+
+services:
+  - type: web
+    name: ElectronicScorerSheet
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ElectronicScorerSheet.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ElectronicScorerSheet
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
