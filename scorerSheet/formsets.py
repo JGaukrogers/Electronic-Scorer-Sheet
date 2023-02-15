@@ -9,19 +9,15 @@ class CustomLineUpFormSet(BaseFormSet):
 
         self.validate_jersey_number()
         self.validate_defensive_position()
+        self.validate_players_entered()
 
-        players_entered = set()
-        for form in self.forms:
-
-            # lineup_formset = LineUpFormSet(form_kwargs={'team_id': team_id})
-            # default_enter_inning, _ = Inning.objects.get_or_create(inning=1)
-    #         if 'player' in form.cleaned_data and 'defensive_position' in form.cleaned_data:
-    #             form.cleaned_data['enter_inning'] = default_enter_inning
-            if form.is_valid() and form.has_changed():
-                if form.cleaned_data['player'] in players_entered:
-                    raise ValidationError('Repeated player detected')
-                else:
-                    players_entered.add(form.cleaned_data['player'])
+    def validate_players_entered(self):
+        players_entered = [
+            form.cleaned_data['player'] for form in self.forms if "player" in form.cleaned_data
+        ]
+        breakpoint()
+        if len(set(players_entered)) < len(players_entered):
+            raise ValidationError('Repeated players detected')
 
     def validate_defensive_position(self):
         occupied_positions = [
