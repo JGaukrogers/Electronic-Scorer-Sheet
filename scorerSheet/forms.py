@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from scorerSheet.models import Cell, Game, Team, Player, LineUp
+from scorerSheet.models import Cell, Game, Team, Player, LineUp, InningsSummation
 
 
 class TeamForm(ModelForm):
@@ -56,3 +56,14 @@ class LineUpForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
         self.fields['enter_inning'].initial = 1
+
+
+class InningsSummationForm(ModelForm):
+    class Meta:
+        model = InningsSummation
+        fields = '__all__'
+        widgets = {
+            'game': forms.HiddenInput,
+            'team': forms.HiddenInput,
+            'inning': forms.HiddenInput,
+        }

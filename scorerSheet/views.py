@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
+from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm, InningsSummationForm
 from scorerSheet.formsets import CustomLineUpFormSet
 from scorerSheet.models import Cell, Game, Team, LineUp, Inning, InningsSummation
 
@@ -170,6 +170,11 @@ def update_sheet(request, game_id, team_id):
         CellForm,
         extra=0,
     )
+    InningsSummationFormSet = modelformset_factory(
+        InningsSummation,
+        InningsSummationForm,
+        extra=0,
+    )
 
     cell_formset_list = dict()
     if request.method == 'POST':
@@ -212,8 +217,11 @@ def update_sheet(request, game_id, team_id):
         other_team_id = game.home_team.id
         which_team = 'Guest'
 
-    inning_summations = InningsSummation.objects.filter(
-        game=game, team=team
+    innings_summation_formSet = InningsSummationFormSet(
+        queryset = InningsSummation.objects.filter(
+            game=game, team=team
+        ),
+        prefix='inning_summations'
     )
 
     context = {
@@ -224,6 +232,6 @@ def update_sheet(request, game_id, team_id):
         'which_team': which_team,
         'formset_list': cell_formset_list,
         'inning_cells': list(cell_formset_list.values())[0],
-        'inning_summations': inning_summations
+        'inning_summations': innings_summation_formSet
     }
     return render(request, "sheet.html", context)
