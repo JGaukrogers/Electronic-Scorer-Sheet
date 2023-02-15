@@ -15,7 +15,6 @@ class CustomLineUpFormSet(BaseFormSet):
         players_entered = [
             form.cleaned_data['player'] for form in self.forms if "player" in form.cleaned_data
         ]
-        breakpoint()
         if len(set(players_entered)) < len(players_entered):
             raise ValidationError('Repeated players detected')
 
