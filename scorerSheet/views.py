@@ -190,6 +190,18 @@ def update_sheet(request, game_id, team_id):
             cell_formset_list[line_up] = cell_formset
             if cell_formset.is_valid():
                 cell_formset.save()
+
+        innings_summation_formset = InningsSummationFormSet(
+            request.POST,
+            queryset = InningsSummation.objects.filter(
+                game=game, team=team
+            ),
+            prefix='inning_summations'
+        )
+        breakpoint()
+        if innings_summation_formset.is_valid():
+            innings_summation_formset.save()
+
         messages.success(request, 'Sheet updated')
     else:
 
@@ -217,7 +229,7 @@ def update_sheet(request, game_id, team_id):
         other_team_id = game.home_team.id
         which_team = 'Guest'
 
-    innings_summation_formSet = InningsSummationFormSet(
+    innings_summation_formset = InningsSummationFormSet(
         queryset = InningsSummation.objects.filter(
             game=game, team=team
         ),
@@ -232,6 +244,6 @@ def update_sheet(request, game_id, team_id):
         'which_team': which_team,
         'formset_list': cell_formset_list,
         'inning_cells': list(cell_formset_list.values())[0],
-        'inning_summations': innings_summation_formSet
+        'inning_summations': innings_summation_formset
     }
     return render(request, "sheet.html", context)

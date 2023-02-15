@@ -43,9 +43,14 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                {{ inning_summations.management_form }}
                 {% for inning_summation in inning_summations %}
                     <td>
-                    {% include 'inning_summations.html' %}
+                        {{inning_summation.id.as_hidden}}
+                        {{inning_summation.game.as_hidden}}
+                        {{inning_summation.team.as_hidden}}
+                        {{inning_summation.inning.as_hidden}}
+                        {% include 'inning_summations.html' %}
                     </td>
                 {% endfor %}
             </tr>
