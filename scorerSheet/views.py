@@ -123,7 +123,7 @@ def create_inning_summations(game, team_id):
         game=game, team=team
     )
 
-    if len(inning_summations) == 0:
+    if inning_summations.count() == 0:
         innings = Inning.objects.all()
         for inning in innings:
             single_inning_summations = InningsSummation()
