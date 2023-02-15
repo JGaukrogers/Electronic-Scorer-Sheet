@@ -126,11 +126,11 @@ def create_inning_summations(game, team_id):
     if inning_summations.count() == 0:
         innings = Inning.objects.all()
         for inning in innings:
-            single_inning_summations = InningsSummation()
-            single_inning_summations.inning = inning
-            single_inning_summations.team = team
-            single_inning_summations.game = game
-            single_inning_summations.save()
+            InningsSummation.objects.create(
+                inning=inning,
+                team=team,
+                game=game,
+            )
 
 
 @login_required
