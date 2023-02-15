@@ -70,7 +70,6 @@ class LineUp(models.Model):
                      ])
 
 
-
 class Cell(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     # btw note that models.CASCADE can destroy a lot of objects recursively
@@ -89,3 +88,14 @@ class Cell(models.Model):
 
     def __str__(self):
         return f'Inning {self.inning} player {self.score}'
+
+
+class InningsSummation(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    inning = models.ForeignKey(Inning, on_delete=models.CASCADE, null=True, blank=True)
+
+    runs = models.SmallIntegerField(null=True, blank=True)
+    hits = models.SmallIntegerField(null=True, blank=True)
+    errors = models.SmallIntegerField(null=True, blank=True)
+    left_on_base = models.SmallIntegerField(validators=[MaxValueValidator(3)], null=True, blank=True)

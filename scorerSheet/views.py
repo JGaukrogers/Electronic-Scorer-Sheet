@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
 from scorerSheet.formsets import CustomLineUpFormSet
-from scorerSheet.models import Cell, Game, Team, LineUp, Inning
+from scorerSheet.models import Cell, Game, Team, LineUp, Inning, InningsSummation
 
 NUMBER_INITIAL_INNINGS = 5
 NUMBER_PLAYERS_PER_INNING = 9
@@ -64,6 +64,10 @@ def create_lineup(request, game_id, team_id):
                     new_lineup = save_new_lineup_element(form, game)
                     create_cells_for_lineup(new_lineup)
 
+            # Check if inning summation exists
+            create_inning_summations(game, team_id)
+
+            # Redirect
             if game.guest_team.id != team_id:
                 team_id = game.guest_team.id
                 return redirect('create_lineup', game_id, team_id)
@@ -75,7 +79,6 @@ def create_lineup(request, game_id, team_id):
         lineup_formset = LineUpFormSet(
             form_kwargs={'team_id': team_id}
         )
-
 
     if game.home_team.id == team_id:
         team_name = game.home_team.team_name
@@ -111,6 +114,23 @@ def create_cells_for_lineup(lineup: LineUp):
     for i in range(0, NUMBER_INITIAL_INNINGS):
         cell = Cell(inning=inning_list[i], score=lineup, position=lineup.defensive_position)
         cell.save()
+
+
+def create_inning_summations(game, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+
+    inning_summations = InningsSummation.objects.filter(
+        game=game, team=team
+    )
+
+    if len(inning_summations) == 0:
+        innings = Inning.objects.all()
+        for inning in innings:
+            single_inning_summations = InningsSummation()
+            single_inning_summations.inning = inning
+            single_inning_summations.team = team
+            single_inning_summations.game = game
+            single_inning_summations.save()
 
 
 @login_required

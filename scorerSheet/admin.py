@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from scorerSheet.models import Inning, Team, Player, Game, Cell, LineUp
+from scorerSheet.models import Inning, Team, Player, Game, Cell, LineUp, InningsSummation
 
 
 @admin.register(Inning)
@@ -32,3 +32,7 @@ class CellAdmin(admin.ModelAdmin):
 @admin.register(LineUp)
 class LineUpAdmin(admin.ModelAdmin):
     list_display = ['game', 'player', 'defensive_position', 'enter_inning', 'exit_inning']
+
+@admin.register(InningsSummation)
+class InningsSummationAdmin(admin.ModelAdmin):
+    list_display = ['game', 'team', 'inning', 'runs', 'hits', 'errors', 'left_on_base']
