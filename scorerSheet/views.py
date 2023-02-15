@@ -202,8 +202,8 @@ def update_sheet(request, game_id, team_id):
             cell_formset_list[line_up] = cell_formset
 
     if not cell_formset_list:
-       messages.warning(request, "Need to create lineup first")
-       return redirect('create_lineup', game.id, game.home_team.id)
+        messages.warning(request, "Need to create lineup first")
+        return redirect('create_lineup', game.id, game.home_team.id)
 
     if game.home_team.id == team_id:
         other_team_id = game.guest_team.id
@@ -211,6 +211,10 @@ def update_sheet(request, game_id, team_id):
     else:
         other_team_id = game.home_team.id
         which_team = 'Guest'
+
+    inning_summations = InningsSummation.objects.filter(
+        game=game, team=team
+    )
 
     context = {
         'team_name': team.team_name,
@@ -220,5 +224,6 @@ def update_sheet(request, game_id, team_id):
         'which_team': which_team,
         'formset_list': cell_formset_list,
         'inning_cells': list(cell_formset_list.values())[0],
+        'inning_summations': inning_summations
     }
     return render(request, "sheet.html", context)

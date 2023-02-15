@@ -38,6 +38,16 @@
                 {% endfor %}
               </tr>
             {% endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            {% for inning_summation in inning_summations %}
+
+                <td>{{inning_summation.runs}}</td>
+
+            {% endfor %}
+            </tr>
         </table>
 
         <br>
