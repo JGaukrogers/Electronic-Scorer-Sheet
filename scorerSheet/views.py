@@ -198,7 +198,6 @@ def update_sheet(request, game_id, team_id):
             ),
             prefix='inning_summations'
         )
-        breakpoint()
         if innings_summation_formset.is_valid():
             innings_summation_formset.save()
 
