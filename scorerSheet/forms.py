@@ -46,7 +46,7 @@ class PlayerForm(ModelForm):
 class LineUpForm(ModelForm):
     class Meta:
         model = LineUp
-        fields = ['player', 'defensive_position', 'enter_inning', 'exit_inning']
+        fields = ['jersey_number', 'player', 'defensive_position', 'enter_inning', 'exit_inning']
         widgets = {
             'game': forms.HiddenInput,
         }

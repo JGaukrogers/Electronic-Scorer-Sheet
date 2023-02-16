@@ -31,7 +31,7 @@ class CellAdmin(admin.ModelAdmin):
 
 @admin.register(LineUp)
 class LineUpAdmin(admin.ModelAdmin):
-    list_display = ['game', 'player', 'defensive_position', 'enter_inning', 'exit_inning']
+    list_display = ['game', 'jersey_number',  'player', 'defensive_position', 'enter_inning', 'exit_inning']
 
 @admin.register(InningsSummation)
 class InningsSummationAdmin(admin.ModelAdmin):

@@ -61,7 +61,7 @@ def create_lineup(request, game_id, team_id):
             for form in lineup_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
-                    new_lineup = save_new_lineup_element(form, game)
+                    new_lineup = update_or_create_lineup(form, game)
                     create_cells_for_lineup(new_lineup)
 
             # Check if inning summation exists
@@ -94,15 +94,25 @@ def create_lineup(request, game_id, team_id):
     return render(request, 'create_lineup.html', context)
 
 
-def save_new_lineup_element(form, game):
-    # TODO - problem with this: you can't modify existing players, only create new ones
-    new_lineup = LineUp()
-    new_lineup.game = game
-    new_lineup.player = form.cleaned_data['player']
-    new_lineup.defensive_position = form.cleaned_data['defensive_position']
-    new_lineup.enter_inning = form.cleaned_data['enter_inning']
-    new_lineup.save()
-    return new_lineup
+def update_or_create_lineup(form, game) -> LineUp:
+    """
+    Check if lineup is there for player + game,
+    if there, update it. If not there, create it.
+    """
+    player = form.cleaned_data['player']
+    try:
+        lineup = LineUp.objects.get(game=game, player=player)
+        # update the lineup
+        lineup.jersey_number = form.cleaned_data['jersey_number']
+        lineup.defensive_position = form.cleaned_data['defensive_position']
+        lineup.enter_inning = form.cleaned_data['enter_inning']
+        lineup.save()
+        return lineup
+    except LineUp.DoesNotExist:
+        new_lineup = form.save(commit=False)
+        new_lineup.game = game
+        new_lineup.save()
+        return new_lineup
 
 
 def create_cells_for_lineup(lineup: LineUp):
