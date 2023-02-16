@@ -3,9 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm
+from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm, InningsSummationForm
 from scorerSheet.formsets import CustomLineUpFormSet
-from scorerSheet.models import Cell, Game, Team, LineUp, Inning
+from scorerSheet.models import Cell, Game, Team, LineUp, Inning, InningsSummation
 
 NUMBER_INITIAL_INNINGS = 5
 NUMBER_PLAYERS_PER_INNING = 9
@@ -64,6 +64,10 @@ def create_lineup(request, game_id, team_id):
                     new_lineup = update_or_create_lineup(form, game)
                     create_cells_for_lineup(new_lineup)
 
+            # Check if inning summation exists
+            create_inning_summations(game, team_id)
+
+            # Redirect
             if game.guest_team.id != team_id:
                 team_id = game.guest_team.id
                 return redirect('create_lineup', game_id, team_id)
@@ -122,6 +126,23 @@ def create_cells_for_lineup(lineup: LineUp):
         cell.save()
 
 
+def create_inning_summations(game, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+
+    inning_summations = InningsSummation.objects.filter(
+        game=game, team=team
+    )
+
+    if inning_summations.count() == 0:
+        innings = Inning.objects.all()
+        for inning in innings:
+            InningsSummation.objects.create(
+                inning=inning,
+                team=team,
+                game=game,
+            )
+
+
 @login_required
 def add_player(request, game_id, team_id):
     team = get_object_or_404(Team, pk=team_id)
@@ -159,6 +180,11 @@ def update_sheet(request, game_id, team_id):
         CellForm,
         extra=0,
     )
+    InningsSummationFormSet = modelformset_factory(
+        InningsSummation,
+        InningsSummationForm,
+        extra=0,
+    )
 
     cell_formset_list = dict()
     if request.method == 'POST':
@@ -174,6 +200,17 @@ def update_sheet(request, game_id, team_id):
             cell_formset_list[line_up] = cell_formset
             if cell_formset.is_valid():
                 cell_formset.save()
+
+        innings_summation_formset = InningsSummationFormSet(
+            request.POST,
+            queryset = InningsSummation.objects.filter(
+                game=game, team=team
+            ),
+            prefix='inning_summations'
+        )
+        if innings_summation_formset.is_valid():
+            innings_summation_formset.save()
+
         messages.success(request, 'Sheet updated')
     else:
 
@@ -201,6 +238,13 @@ def update_sheet(request, game_id, team_id):
         other_team_id = game.home_team.id
         which_team = 'Guest'
 
+    innings_summation_formset = InningsSummationFormSet(
+        queryset = InningsSummation.objects.filter(
+            game=game, team=team
+        ),
+        prefix='inning_summations'
+    )
+
     context = {
         'team_name': team.team_name,
         'game_id': game_id,
@@ -209,5 +253,6 @@ def update_sheet(request, game_id, team_id):
         'which_team': which_team,
         'formset_list': cell_formset_list,
         'inning_cells': list(cell_formset_list.values())[0],
+        'inning_summations': innings_summation_formset
     }
     return render(request, "sheet.html", context)
