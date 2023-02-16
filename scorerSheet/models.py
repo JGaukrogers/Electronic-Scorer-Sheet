@@ -47,6 +47,7 @@ class Inning(models.Model):
 class LineUp(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    jersey_number = models.PositiveSmallIntegerField(null=True, blank=True)
     defensive_position = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(9)]
     )
