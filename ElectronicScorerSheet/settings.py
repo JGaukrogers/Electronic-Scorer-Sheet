@@ -29,6 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+CSRF_TRUSTED_ORIGINS = config('TRUSTED_ORIGINS', cast=Csv())
 
 # Application definition
 
@@ -130,3 +131,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/user_admin/login/'
 LOGIN_REDIRECT_URL = 'game_board'
 LOGOUT_REDIRECT_URL = 'custom_logout'
+
+
