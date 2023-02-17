@@ -28,7 +28,6 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-# ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 CSRF_TRUSTED_ORIGINS = config('TRUSTED_ORIGINS', cast=Csv())
 
@@ -133,6 +132,4 @@ LOGIN_URL = '/user_admin/login/'
 LOGIN_REDIRECT_URL = 'game_board'
 LOGOUT_REDIRECT_URL = 'custom_logout'
 
-# CSRF_COOKIE_DOMAIN = None
-# CSRF_COOKIE_SECURE = None
 
