@@ -32,6 +32,10 @@ class CellForm(ModelForm):
                                                                   player__pass_number=player_pass_nr)
         else:
             self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id)
+        self.fields['game_move_H_1'].widget.attrs['size'] = 10
+        self.fields['game_move_1_2'].widget.attrs['size'] = 10
+        self.fields['game_move_2_3'].widget.attrs['size'] = 10
+        self.fields['game_move_3_H'].widget.attrs['size'] = 10
 
 
 class PlayerForm(ModelForm):
