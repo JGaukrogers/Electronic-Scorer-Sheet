@@ -1,20 +1,10 @@
-{% load static %}
-<style type="text/css">
-.divbackg {
-  background-size: 60px;
-  background-image: url({% static 'diamant.png' %});
-  background-repeat: no-repeat;
-  background-position: center;
-
-}
-</style>
-<div class="card divbackg" style="padding: 5px;width: fit-content;">
+<div class="card divbackg cell field_box">
         <div class="row">
-            <div class="col-3" style="width: fit-content;">{{cell.game_move_2_3}}</div>
-            <div class="col-3" style="width: fit-content;">{{cell.game_move_1_2}}</div>
+            <div class="col-3 field_box">{{cell.game_move_2_3}}</div>
+            <div class="col-3 field_box">{{cell.game_move_1_2}}</div>
         </div>
         <div class="row">
-            <div class="col-3" style="width: fit-content;">{{cell.game_move_3_H}}</div>
-            <div class="col-3" style="width: fit-content;">{{cell.game_move_H_1}}</div>
+            <div class="col-3 field_box">{{cell.game_move_3_H}}</div>
+            <div class="col-3 field_box">{{cell.game_move_H_1}}</div>
         </div>
 </div>
