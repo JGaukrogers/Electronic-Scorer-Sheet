@@ -71,3 +71,10 @@ class InningsSummationForm(ModelForm):
             'team': forms.HiddenInput,
             'inning': forms.HiddenInput,
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['runs'].widget.attrs['size'] = 5
+        self.fields['hits'].widget.attrs['size'] = 5
+        self.fields['errors'].widget.attrs['size'] = 5
+        self.fields['left_on_base'].widget.attrs['size'] = 5
