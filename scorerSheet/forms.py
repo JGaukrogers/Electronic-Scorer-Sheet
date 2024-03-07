@@ -32,6 +32,8 @@ class CellForm(ModelForm):
                                                                   player__pass_number=player_pass_nr)
         else:
             self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id)
+        for field_name in ['game_move_H_1', 'game_move_1_2', 'game_move_2_3', 'game_move_3_H']:
+            set_size_for_game_cell(self.fields[field_name])
 
 
 class PlayerForm(ModelForm):
@@ -67,3 +69,12 @@ class InningsSummationForm(ModelForm):
             'team': forms.HiddenInput,
             'inning': forms.HiddenInput,
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in ['runs', 'hits', 'errors', 'left_on_base']:
+            set_size_for_game_cell(self.fields[field_name])
+
+
+def set_size_for_game_cell(field):
+    field.widget.attrs['size'] = 5

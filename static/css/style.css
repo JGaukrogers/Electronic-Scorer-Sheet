@@ -1,0 +1,16 @@
+.diamant_background {
+    background-size: 60px;
+    background-image: url('../img/diamant.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.field_box{
+    width: fit-content;
+}
+.cell_box{
+    width: fit-content;
+}
+
+.cell {
+    padding: 5px;
+}
