@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm, InningsSummationForm
 from scorerSheet.formsets import CustomLineUpFormSet
-from scorerSheet.models import Cell, Game, Team, LineUp, Inning, InningsSummation
+from scorerSheet.models import Cell, Game, Team, LineUp, Inning, InningsSummation, TimeOfChange
 
 NUMBER_INITIAL_INNINGS = 5
 NUMBER_PLAYERS_PER_INNING = 9
@@ -50,7 +50,7 @@ def create_lineup(request, game_id, team_id):
                                          # min_num + 1 -> # forms displayed
                                          min_num=9, max_num=9, absolute_max=10)
     game = get_object_or_404(Game, pk=game_id)
-    default_enter_inning, _ = Inning.objects.get_or_create(inning=1)
+    initial_time_of_change, _ = TimeOfChange.objects.get_or_create(inning_in=1, inning_part='T', batsperson=1)
     if request.method == 'POST':
         lineup_formset = LineUpFormSet(request.POST,
                                        form_kwargs={'team_id': team_id},

@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.db import models
 
 
@@ -44,6 +44,25 @@ class Inning(models.Model):
         return str(self.inning)
 
 
+class TimeOfChange(models.Model):
+    inning_in = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)])
+    inning_part = models.CharField(max_length=1,
+                                   default='T',
+                                   validators=[RegexValidator(regex=r'[TBtb]')])
+    batsperson = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(9)])
+
+    def save(self, *args, **kwargs):
+        self.inning_part = self.inning_part.upper()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return str(f'{self.inning_in}{self.inning_part}{self.batsperson}')
+
+
 class LineUp(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
@@ -51,9 +70,9 @@ class LineUp(models.Model):
     defensive_position = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(9)]
     )
-    enter_inning = models.ForeignKey(Inning, related_name="enter_inning",
+    enter_inning = models.ForeignKey(TimeOfChange, related_name="enter_inning",
                                      on_delete=models.CASCADE)
-    exit_inning = models.ForeignKey(Inning, related_name="exit_inning",
+    exit_inning = models.ForeignKey(TimeOfChange, related_name="exit_inning",
                                     on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -64,10 +83,10 @@ class LineUp(models.Model):
 
     def __iter__(self):
         return iter([self.game,
-                 self.player,
-                 self.defensive_position,
-                 self.enter_inning,
-                 self.exit_inning,
+                     self.player,
+                     self.defensive_position,
+                     self.enter_inning,
+                     self.exit_inning,
                      ])
 
 
