@@ -3,9 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, LineUpForm, InningsSummationForm
-from scorerSheet.formsets import CustomLineUpFormSet
-from scorerSheet.models import Cell, Game, Team, LineUp, Inning, InningsSummation, TimeOfChange
+from scorerSheet.forms import CellForm, GameForm, TeamForm, PlayerForm, InningsSummationForm, PlayerRowForm
+from scorerSheet.models import Cell, Game, Team, LineUp, Inning, InningsSummation, TimeOfChange, PlayerRow
 
 NUMBER_INITIAL_INNINGS = 5
 NUMBER_PLAYERS_PER_INNING = 9
@@ -45,20 +44,20 @@ def create_team(request):
 
 @login_required
 def create_lineup(request, game_id, team_id):
-    LineUpFormSet = modelformset_factory(LineUp, LineUpForm, formset=CustomLineUpFormSet,
+    PlayerRowFormSet = modelformset_factory(PlayerRow, PlayerRowForm, #formset=CustomLineUpFormSet,
                                          # can_order=True,
                                          # min_num + 1 -> # forms displayed
                                          min_num=9, max_num=9, absolute_max=10)
     game = get_object_or_404(Game, pk=game_id)
     initial_time_of_change, _ = TimeOfChange.objects.get_or_create(inning_in=1, inning_part='T', batsperson=1)
     if request.method == 'POST':
-        lineup_formset = LineUpFormSet(request.POST,
+        player_row_formset = PlayerRowFormSet(request.POST,
                                        form_kwargs={'team_id': team_id},
                                        # initial=[{'enter_inning': default_enter_inning}],
                                        )
 
-        if lineup_formset.is_valid():
-            for form in lineup_formset:
+        if player_row_formset.is_valid():
+            for form in player_row_formset:
                 # https://stackoverflow.com/a/29899919
                 if form.is_valid() and form.has_changed():
                     new_lineup = update_or_create_lineup(form, game)
@@ -76,7 +75,7 @@ def create_lineup(request, game_id, team_id):
 
     else:
         # upon GET make a new one
-        lineup_formset = LineUpFormSet(
+        player_row_formset = PlayerRowFormSet(
             form_kwargs={'team_id': team_id}
         )
 
@@ -86,7 +85,7 @@ def create_lineup(request, game_id, team_id):
         team_name = game.guest_team.team_name
 
     context = {
-        'team_formset': lineup_formset, # TODO: change name of home_team_formset
+        'player_row_formset': player_row_formset,
         'team_name': team_name,
         'game_id': game_id,
         'team_id': team_id,
@@ -94,35 +93,40 @@ def create_lineup(request, game_id, team_id):
     return render(request, 'create_lineup.html', context)
 
 
-def update_or_create_lineup(form, game) -> LineUp:
+def update_or_create_lineup(form, game) -> PlayerRow:
     """
     Check if lineup is there for player + game,
     if there, update it. If not there, create it.
     """
     player = form.cleaned_data['player']
+    batting_pos = int(form.prefix.strip('form-'))
+    lineup = LineUp.objects.get_or_create(game=game, team=player.team, batting_pos=batting_pos)[0]
     try:
-        lineup = LineUp.objects.get(game=game, player=player)
+        player_row = PlayerRow.objects.get(line_up_pos=lineup.pk, player=player.pk)
         # update the lineup
-        lineup.jersey_number = form.cleaned_data['jersey_number']
-        lineup.defensive_position = form.cleaned_data['defensive_position']
-        lineup.enter_inning = form.cleaned_data['enter_inning']
+        player_row.jersey_number = form.cleaned_data['jersey_number']
+        player_row.defensive_position = form.cleaned_data['defensive_position']
         lineup.save()
-        return lineup
-    except LineUp.DoesNotExist:
-        new_lineup = form.save(commit=False)
-        new_lineup.game = game
-        new_lineup.save()
-        return new_lineup
+        return player_row
+    except PlayerRow.DoesNotExist:
+        new_player_row = PlayerRow()
+        new_player_row.player = player
+        new_player_row.jersey_number = form.cleaned_data['jersey_number']
+        new_player_row.defensive_position = form.cleaned_data['defensive_position']
+        new_player_row.line_up_pos = lineup
+        new_player_row.enter_inning = TimeOfChange.objects.get_or_create(inning_in=1, inning_part='T', batsperson=1)[0]
+        new_player_row.save()
+        return new_player_row
 
 
-def create_cells_for_lineup(lineup: LineUp):
+def create_cells_for_lineup(player_row: PlayerRow):
     # I only want to retrieve or get once the inning
     inning_list = []
     for i in range(1, NUMBER_INITIAL_INNINGS+1):
         inning_list.append(Inning.objects.get_or_create(inning=i)[0])
 
     for i in range(0, NUMBER_INITIAL_INNINGS):
-        cell = Cell(inning=inning_list[i], score=lineup, position=lineup.defensive_position)
+        cell = Cell(inning=inning_list[i], score=player_row.line_up_pos, position=player_row.line_up_pos.batting_pos)
         cell.save()
 
 
@@ -166,10 +170,10 @@ def update_sheet(request, game_id, team_id):
     game = get_object_or_404(Game, pk=game_id)
     team = get_object_or_404(Team, pk=team_id)
 
-    line_up_ids = LineUp.objects.select_related(
+    player_row_ids = PlayerRow.objects.select_related(
         "player"
     ).filter(
-        game=game, player__team=team
+        line_up_pos__game=game, line_up_pos__team=team
     ).values_list(
         "id",
         flat=True
@@ -188,16 +192,16 @@ def update_sheet(request, game_id, team_id):
 
     cell_formset_list = dict()
     if request.method == 'POST':
-        for line_up_id in line_up_ids:
-            line_up = LineUp.objects.get(pk=line_up_id)
+        for player_row_id in player_row_ids:
+            player_row = LineUp.objects.get(pk=player_row_id)
             cell_formset = CellFormSet(
                 request.POST,
                 form_kwargs={
                     'team_id': team_id,
                 },
-                prefix=line_up_id
+                prefix=player_row_id
             )
-            cell_formset_list[line_up] = cell_formset
+            cell_formset_list[player_row] = cell_formset
             if cell_formset.is_valid():
                 cell_formset.save()
 
@@ -214,18 +218,19 @@ def update_sheet(request, game_id, team_id):
         messages.success(request, 'Sheet updated')
     else:
 
-        for line_up_id in line_up_ids:
-            line_up = LineUp.objects.get(pk=line_up_id)
+        for player_row_id in player_row_ids:
+            player_row = PlayerRow.objects.get(pk=player_row_id)
+            line_up = player_row.line_up_pos
             cell_formset = CellFormSet(
                 queryset=Cell.objects.filter(
-                    score=line_up_id
+                    score=line_up.pk
                 ),
                 form_kwargs={
                     'team_id': team_id,
                 },
-                prefix=line_up_id
+                prefix=line_up.pk
             )
-            cell_formset_list[line_up] = cell_formset
+            cell_formset_list[player_row] = cell_formset
 
     if not cell_formset_list:
         messages.warning(request, "Need to create lineup first")

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from scorerSheet.models import Cell, Game, Team, Player, LineUp, InningsSummation
+from scorerSheet.models import Cell, Game, Team, Player, LineUp, InningsSummation, PlayerRow
 
 
 class TeamForm(ModelForm):
@@ -28,10 +28,10 @@ class CellForm(ModelForm):
             player_pass_nr = kwargs.pop('player')
         super().__init__(*args, **kwargs)
         if player_pass_nr:
-            self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id,
-                                                                  player__pass_number=player_pass_nr)
+            self.fields['score'].queryset = LineUp.objects.filter(team=team_id,
+                                                                  playerrow__player__pass_number=player_pass_nr)
         else:
-            self.fields['score'].queryset = LineUp.objects.filter(player__team=team_id)
+            self.fields['score'].queryset = LineUp.objects.filter(team=team_id)
         for field_name in ['game_move_H_1', 'game_move_1_2', 'game_move_2_3', 'game_move_3_H']:
             set_size_for_game_cell(self.fields[field_name])
 
@@ -48,9 +48,10 @@ class PlayerForm(ModelForm):
 class LineUpForm(ModelForm):
     class Meta:
         model = LineUp
-        fields = ['jersey_number', 'player', 'defensive_position', 'enter_inning', 'exit_inning']
+        fields = ['batting_pos']
         widgets = {
             'game': forms.HiddenInput,
+            # 'team': forms.HiddenInput
         }
 
     def __init__(self, *args, **kwargs):
@@ -58,6 +59,22 @@ class LineUpForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
         self.fields['enter_inning'].initial = 1
+
+
+class PlayerRowForm(ModelForm):
+    class Meta:
+        model = PlayerRow
+        fields = ['player', 'jersey_number', 'defensive_position']
+        widgets = {
+            'line_up_pos': forms.HiddenInput,
+            'enter_inning': forms.HiddenInput
+        }
+
+    def __init__(self, *args, **kwargs):
+        team_id = kwargs.pop('team_id')
+        super().__init__(*args, **kwargs)
+        self.fields['player'].queryset = Player.objects.filter(team__id=team_id)
+        # self.fields['enter_inning'].initial = 1
 
 
 class InningsSummationForm(ModelForm):

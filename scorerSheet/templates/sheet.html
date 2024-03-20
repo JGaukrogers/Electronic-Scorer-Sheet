@@ -18,20 +18,20 @@
                   <th class="text-center">{{cell.inning.value}}</th>
                 {% endfor %}
             </tr>
-            {% for line_up, formset in formset_list.items %}
+            {% for player_row, formset in formset_list.items %}
               {{ formset.management_form }}
               <tr>
                 {% for cell in formset %}
 
                   {% if cell == formset.0 %}
-                      {% if line_up.jersey_number is None %}
+                      {% if player_row.jersey_number is None %}
                           <td></td>
                       {% else %}
-                          <td>{{line_up.jersey_number}}</td>
+                          <td>{{player_row.jersey_number}}</td>
                       {% endif %}
-                      <td>{{line_up.player}}</td>
-                      <td>{{line_up.defensive_position}}</td>
-                      <td>{{line_up.enter_inning}}</td>
+                      <td>{{player_row.player}}</td>
+                      <td>{{player_row.defensive_position}}</td>
+                      <td>{{player_row.enter_inning}}</td>
                   {% endif %}
 
                   <td>

@@ -65,6 +65,33 @@ class TimeOfChange(models.Model):
 
 class LineUp(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    batting_pos = models.PositiveSmallIntegerField(null=True,
+        validators=[MinValueValidator(1), MaxValueValidator(9)]
+    )
+
+    def __str__(self):
+        return f'game: {self.game} batting pos: {self.batting_pos}'
+        # return (
+        #     f'{self.player} @ position: {self.defensive_position} '
+        #     f'(entered: {self.enter_inning})'
+        # )
+
+    def __iter__(self):
+        return iter([self.game,
+                     # self.team,
+                     self.batting_pos,
+                     # self.player,
+                     # self.defensive_position,
+                     # self.enter_inning,
+                     ])
+
+    # class Meta:
+    #     unique_together = [('game', 'team', 'batting_pos')]
+
+
+class PlayerRow(models.Model):
+    line_up_pos = models.ForeignKey(LineUp, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     jersey_number = models.PositiveSmallIntegerField(null=True, blank=True)
     defensive_position = models.PositiveSmallIntegerField(
@@ -72,22 +99,6 @@ class LineUp(models.Model):
     )
     enter_inning = models.ForeignKey(TimeOfChange, related_name="enter_inning",
                                      on_delete=models.CASCADE)
-    exit_inning = models.ForeignKey(TimeOfChange, related_name="exit_inning",
-                                    on_delete=models.CASCADE, null=True, blank=True)
-
-    def __str__(self):
-        return (
-            f'{self.player} @ position: {self.defensive_position} '
-            f'(entered: {self.enter_inning} exited: {self.exit_inning})'
-        )
-
-    def __iter__(self):
-        return iter([self.game,
-                     self.player,
-                     self.defensive_position,
-                     self.enter_inning,
-                     self.exit_inning,
-                     ])
 
 
 class Cell(models.Model):
