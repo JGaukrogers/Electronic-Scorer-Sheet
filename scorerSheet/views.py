@@ -99,7 +99,7 @@ def update_or_create_lineup(form, game) -> PlayerRow:
     if there, update it. If not there, create it.
     """
     player = form.cleaned_data['player']
-    batting_pos = int(form.prefix.strip('form-'))
+    batting_pos = int(form.prefix.strip('form-'))+1
     lineup = LineUp.objects.get_or_create(game=game, team=player.team, batting_pos=batting_pos)[0]
     try:
         player_row = PlayerRow.objects.get(line_up_pos=lineup.pk, player=player.pk)
@@ -193,17 +193,21 @@ def update_sheet(request, game_id, team_id):
     cell_formset_list = dict()
     if request.method == 'POST':
         for player_row_id in player_row_ids:
-            player_row = LineUp.objects.get(pk=player_row_id)
+            player_row = PlayerRow.objects.get(pk=player_row_id)
+            line_up = player_row.line_up_pos
             cell_formset = CellFormSet(
                 request.POST,
                 form_kwargs={
                     'team_id': team_id,
                 },
-                prefix=player_row_id
+                prefix=line_up.pk
             )
             cell_formset_list[player_row] = cell_formset
             if cell_formset.is_valid():
                 cell_formset.save()
+            else:
+                breakpoint()
+                print(cell_formset.errors)
 
         innings_summation_formset = InningsSummationFormSet(
             request.POST,
