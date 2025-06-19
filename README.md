@@ -7,7 +7,7 @@ python manage.py runserver
 ```
 
 ## Usage
-After logging in, we see a list of created games. 
+After logging in, we see a list of created games.
 By clicking on one of the team names, we access on the scoring board for said team.
 
 ### Navigation bar and home screen
@@ -32,12 +32,12 @@ If the player is not on the DB yet, create it with _Add a new player_.
 Once done, click on _Submit team_ to continue.
 ![](static/create_line_up.png)
 
-By clicking on _Add player_, you can continue to add players until you have introduced the all. 
+By clicking on _Add player_, you can continue to add players until you have introduced the all.
 Once done, get back by clicking on _Get back_.
 ![](static/add_new_player.png)
 
 
 ### The Scoring board
-Once you have introduced all data, you can begin to score. 
+Once you have introduced all data, you can begin to score.
 You can switch the score boards of the teams by clicking on _Switch Score Sheet_.
 ![](static/scoring_board.png)
