@@ -131,5 +131,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/user_admin/login/'
 LOGIN_REDIRECT_URL = 'game_board'
 LOGOUT_REDIRECT_URL = 'custom_logout'
-
-
